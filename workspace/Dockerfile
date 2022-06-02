@@ -54,7 +54,8 @@ RUN set -xe; \
     useradd -l -u ${PUID} -g laradock -m laradock -G docker_env && \
     usermod -p "*" laradock -s /bin/bash && \
     apt-get install -yqq \
-      apt-utils \
+    git-flow \
+    apt-utils \
       #
       #--------------------------------------------------------------------------
       # Mandatory Software's Installation
