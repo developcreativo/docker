@@ -39,8 +39,8 @@ RUN set -xe; \
     pecl channel-update pecl.php.net && \
     apt-get install -yqq \
       apt-utils \
+      gnupg2 \
       git \
-	 gnupg2 \	
       #
       #--------------------------------------------------------------------------
       # Mandatory Software's Installation
@@ -1027,7 +1027,7 @@ RUN if [ ${INSTALL_AUDIOWAVEFORM} = true ]; then \
    && make \
    && make install \
 ;fi
-
+ 
 
 #####################################
 # wkhtmltopdf:
