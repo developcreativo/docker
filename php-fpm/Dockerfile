@@ -250,6 +250,8 @@ RUN if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
 ;fi
 RUN sed -i "s/xdebug.cli_color=0/xdebug.cli_color=1/" /usr/local/etc/php/conf.d/xdebug.ini
 
+
+
 ###########################################################################
 # pcov:
 ###########################################################################
