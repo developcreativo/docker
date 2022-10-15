@@ -101,8 +101,8 @@ ENV TZ ${TZ}
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 
-RUN git config --global user.email ${LARADOCK_EMAIL_GIT}
-RUN git config --global user.name ${LARADOCK_NAME_GIT}
+RUN git config --global user.email echo ${LARADOCK_EMAIL_GIT}
+RUN git config --global user.name echo ${LARADOCK_NAME_GIT}
 ###########################################################################
 # User Aliases
 ###########################################################################
@@ -1803,3 +1803,32 @@ RUN apt-get clean && \
 
 # Set default work directory
 WORKDIR /var/www
+
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends jpegoptim optipng pngquant gifsicle ffmpeg imagemagick ghostscript php-imagick coreutils libjpeg-dev libpng-dev libtiff-dev libgif-dev graphviz
+RUN npm install -g svgo
+
+# Install laravel legacy version
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --allow-downgrades --allow-remove-essential \
+        --allow-change-held-packages \
+        php7.4-cli \
+        php7.4-common \
+        php7.4-curl \
+        php7.4-intl \
+        php7.4-json \
+        php7.4-xml \
+        php7.4-mbstring \
+        php7.4-mysql \
+        php7.4-pgsql \
+        php7.4-pdo \
+        php7.4-redis \
+        php7.4-sqlite \
+        php7.4-sqlite3 \
+        php7.4-zip \
+        php7.4-bcmath \
+        php7.4-memcached \
+        php7.4-gd \
+        php7.4-dev

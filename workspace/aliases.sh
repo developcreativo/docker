@@ -202,3 +202,7 @@ cd "$PWD"
 alias lang='artisan vue-i18n:generate'
 alias wipelogs='truncate -s 0 storage/logs/*.log'
 alias websockets="cd /var/www/laravel-websockets/; php artisan websockets:serve"
+# PHP
+alias composer74='/usr/bin/php7.4 /usr/local/bin/composer'
+alias php7.4='/usr/bin/php7.4'
+alias art7.4='/usr/bin/php7.4 artisan'
