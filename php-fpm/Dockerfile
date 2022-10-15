@@ -62,6 +62,9 @@ RUN set -xe; \
       fi && \
       # Install the zip extension
       docker-php-ext-install zip && \
+      curl -s https://getcomposer.org/installer | php && \
+      mv composer.phar /usr/local/bin/composer && \
+      composer selfupdate 2.2.12 && \
       php -m | grep -q 'zip'
 
 
