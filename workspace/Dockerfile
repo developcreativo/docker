@@ -54,8 +54,11 @@ RUN set -xe; \
     useradd -l -u ${PUID} -g laradock -m laradock -G docker_env && \
     usermod -p "*" laradock -s /bin/bash && \
     apt-get install -yqq \
+      wget \
       apt-utils \
       git-flow \
+      tesseract-ocr tesseract-ocr-spa tesseract-ocr-spa tesseract-ocr-rus tesseract-ocr-por tesseract-ocr-pol tesseract-ocr-ita tesseract-ocr-fra tesseract-ocr-eus tesseract-ocr-deu \
+      poppler-utils \
       #
       #--------------------------------------------------------------------------
       # Mandatory Software's Installation
@@ -100,6 +103,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ###########################################################################
 
 USER root
+# Add pdf
+COPY ./topdf.sh /bin/topdf
 
 COPY ./aliases.sh /root/aliases.sh
 COPY ./aliases.sh /home/laradock/aliases.sh
@@ -133,6 +138,8 @@ COPY ./auth.json /home/laradock/.composer/auth.json
 
 # Make sure that ~/.composer belongs to laradock
 RUN chown -R laradock:laradock /home/laradock/.composer
+RUN chmod +x /bin/topdf
+
 
 # Export composer vendor path
 RUN echo "" >> ~/.bashrc && \
@@ -1243,7 +1250,7 @@ RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
     ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/imagick.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-imagick.ini && \
     php -m | grep -q 'imagick' \
 ;fi
-
+RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
 ###########################################################################
 # Terraform:
 ###########################################################################

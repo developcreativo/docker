@@ -41,6 +41,8 @@ RUN set -xe; \
       apt-utils \
       gnupg2 \
       git \
+      wget \
+      curl \
       #
       #--------------------------------------------------------------------------
       # Mandatory Software's Installation
@@ -61,6 +63,12 @@ RUN set -xe; \
       # Install the zip extension
       docker-php-ext-install zip && \
       php -m | grep -q 'zip'
+
+
+# Download browscap.ini
+RUN mkdir /var/lib/browscap \
+    && wget http://browscap.org/stream?q=BrowsCapINI -O /var/lib/browscap/browscap.ini
+
 
 #
 #--------------------------------------------------------------------------
@@ -804,7 +812,7 @@ RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
     docker-php-ext-enable imagick; \
     php -m | grep -q 'imagick' \
 ;fi
-
+RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
 ###########################################################################
 # SMB:
 ###########################################################################

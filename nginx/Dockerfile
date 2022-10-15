@@ -20,6 +20,19 @@ RUN apk update \
 
 RUN apk add --no-cache curl
 
+RUN apk update add libnss3-tools
+
+
+ARG MKCERT_VERSION='v1.4.3'
+RUN apk update && apk upgrade && \
+    apk add --no-cache --update openssl && \
+    rm -rf /var/cache/apk/* && \
+    wget -O /usr/local/bin/mkcert https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VERSION}/mkcert-v1.4.3-linux-amd64 && \
+    chmod +x /usr/local/bin/mkcert && \
+    mkdir -p /etc/nginx/cert && \
+    cd /etc/nginx/cert && \
+    mkcert --install
+    
 RUN set -x ; \
     addgroup -g 82 -S www-data ; \
     adduser -u 82 -D -S -G www-data www-data && exit 0 ; exit 1
