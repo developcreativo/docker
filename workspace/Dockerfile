@@ -13,6 +13,8 @@
 #
 
 ARG LARADOCK_PHP_VERSION
+ARG LARADOCK_EMAIL_GIT
+ARG LARADOCK_NAME_GIT
 ARG BASE_IMAGE_TAG_PREFIX=latest
 FROM laradock/workspace:${BASE_IMAGE_TAG_PREFIX}-${LARADOCK_PHP_VERSION}
 
@@ -98,6 +100,9 @@ ENV TZ ${TZ}
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+
+RUN git config --global user.email ${LARADOCK_EMAIL_GIT}
+RUN git config --global user.name ${LARADOCK_NAME_GIT}
 ###########################################################################
 # User Aliases
 ###########################################################################
