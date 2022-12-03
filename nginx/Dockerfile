@@ -19,7 +19,6 @@ RUN apk update \
     && apk add --no-cache bash
 
 RUN apk add --no-cache curl
-
 RUN apk update add libnss3-tools
 
 
