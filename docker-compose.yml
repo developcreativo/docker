@@ -207,6 +207,32 @@ services:
       links:
         - docker-in-docker
 
+    clamd:
+      build:
+        context: ./clamavd
+      ports:
+        - "3311:3311"
+        - "3310:3310"
+      depends_on:
+        - workspace
+        - php-fpm
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      networks:
+        - frontend
+        - backend
+    clamdscan:
+      build:
+        context: ./clamavd/test
+      command: tail -F anything
+      depends_on:
+        - clamd
+      links:
+        - clamd:clamd
+      environment:
+        - CLAMD_PORT=3310
+        - CLAMD_HOST=clamd
+
 ### PHP-FPM ##############################################
     php-fpm:
       build:
