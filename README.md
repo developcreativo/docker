@@ -1,361 +1,472 @@
-<p align="center">
-    <img src="/.github/home-page-images/laradock-logo.jpg?raw=true" alt="Laradock Logo"/>
-</p>
+# Customizacion laradock
 
-<p align="center">
-   <a href="http://laradock.io/contributing"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" alt="contributions welcome"></a>
-   <a href="https://github.com/laradock/laradock/network"><img src="https://img.shields.io/github/forks/laradock/laradock.svg" alt="GitHub forks"></a>
-   <a href="https://github.com/laradock/laradock/issues"><img src="https://img.shields.io/github/issues/laradock/laradock.svg" alt="GitHub issues"></a>
-   <a href="https://github.com/laradock/laradock/stargazers"><a href="#backers" alt="sponsors on Open Collective"><img src="https://opencollective.com/laradock/backers/badge.svg" /></a> <a href="#sponsors" alt="Sponsors on Open Collective"><img src="https://opencollective.com/laradock/sponsors/badge.svg" /></a> <img src="https://img.shields.io/github/stars/laradock/laradock.svg" alt="GitHub stars"></a>
-   <a href="https://github.com/laradock/laradock/actions/workflows/main-ci.yml"><img src="https://github.com/laradock/laradock/actions/workflows/main-ci.yml/badge.svg" alt="GitHub CI"></a>
-   <a href="https://travis-ci.org/laradock/laradock"><img src="https://travis-ci.org/laradock/laradock.svg?branch=master" alt="Build status"></a>
-   <a href="https://raw.githubusercontent.com/laradock/laradock/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license"></a>
-</p>
+## Install / Setup
 
-<p align="center"><b>Full PHP development environment based on Docker.</b></p>
+Follow these steps to get this up and running. This is configured to run multiple sites from one laradock not a single project.
 
-<p align="center">
-    <a href="http://zalt.me"><img src="http://forthebadge.com/images/badges/built-by-developers.svg" alt="forthebadge" width="180"></a>
-</p>
+### Ubuntu
 
-<br>
-<br>
+Install docker [https://docs.docker.com/install/linux/docker-ce/ubuntu/](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
 
-<h4 align="center" style="color:#7d58c2">Use Docker First - Learn About It Later!</h4>
+##### Step 1 Update Local Database
 
-<p align="center">
-	<a href="http://laradock.io">
-	   <img src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/documentation-button.png" width="300px" alt="Laradock Documentation"/>
-	</a>
-</p>
+Update the local database with the command:
 
+`sudo apt-get update`
 
-## Join Us
+##### Step 2 Download Dependencies
 
-[![Gitter](https://badges.gitter.im/Laradock/laradock.svg)](https://gitter.im/Laradock/laradock?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+You’ll need to run these commands to allow your operating system to access the Docker repositories over HTTPS.
 
-[![Gitpod](https://img.shields.io/badge/Gitpod-ready--to--code-blue)](https://gitpod.io/#https://github.com/laradock/laradock)
+In the terminal window, type:
 
----
+`sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common`
+
+##### Step 3 Add Docker’s GPG Key
+
+The GPG key is a security feature.
+
+To ensure that the software you’re installing is authentic enter:
+
+`curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add`
+
+##### Step 4 Install docker repo
+
+To install the Docker repository, enter the command:
+
+`sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs) stable"`
 
 
-## Awesome People
+##### Step 5: Update Repositories
+Update the repositories you just added:
 
-Laradock is an MIT-licensed open source project with its ongoing development made possible entirely by the support of all these smart and generous people, from code contributors to financial contributors. 💜
+`sudo apt-get update`
 
+##### Step 6: Install Latest Version of Docker
+make sure it's the 19.x *(a the time of writing)* version. you should end up with the following.
 
-### Project Maintainers
+```
+docker-ce-cli/focal,now 5:19.03.13~3-0~ubuntu-focal amd64
+docker-ce/focal,now 5:19.03.13~3-0~ubuntu-focal amd64
+``` 
 
-<table>
-  <tbody>
-    <tr>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/mahmoudz.png?s=150">
-            <br>
-            <strong>Mahmoud Zalt</strong>
-            <br>
-            <a href="https://github.com/Mahmoudz">@mahmoudz</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/appleboy.png?s=150">
-            <br>
-            <strong>Bo-Yi Wu</strong>
-            <br>
-            <a href="https://github.com/appleboy">@appleboy</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/philtrep.png?s=150">
-            <br>
-            <strong>Philippe Trépanier</strong>
-            <br>
-            <a href="https://github.com/philtrep">@philtrep</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/mikeerickson.png?s=150">
-            <br>
-            <strong>Mike Erickson</strong>
-            <br>
-            <a href="https://github.com/mikeerickson">@mikeerickson</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/zeroc0d3.png?s=150">
-            <br>
-            <strong>Dwi Fahni Denni</strong>
-            <br>
-            <a href="https://github.com/zeroc0d3">@zeroc0d3</a>
-        </td>
-     </tr>
-     <tr>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/thorerik.png?s=150">
-            <br>
-            <strong>Thor Erik</strong>
-            <br>
-            <a href="https://github.com/thorerik">@thorerik</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/winfried-van-loon.png?s=150">
-            <br>
-            <strong>Winfried van Loon</strong>
-            <br>
-            <a href="https://github.com/winfried-van-loon">@winfried-van-loon</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/sixlive.png?s=150">
-            <br>
-            <strong>TJ Miller</strong>
-            <br>
-            <a href="https://github.com/sixlive">@sixlive</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/bestlong.png?s=150">
-            <br>
-            <strong>Yu-Lung Shao (Allen)</strong>
-            <br>
-            <a href="https://github.com/bestlong">@bestlong</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/urukalo.png?s=150">
-            <br>
-            <strong>Milan Urukalo</strong>
-            <br>
-            <a href="https://github.com/urukalo">@urukalo</a>
-        </td>
-     </tr>
-     <tr>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/vwchu.png?s=150">
-            <br>
-            <strong>Vince Chu</strong>
-            <br>
-            <a href="https://github.com/vwchu">@vwchu</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/zuohuadong.png?s=150">
-            <br>
-            <strong>Huadong Zuo</strong>
-            <br>
-            <a href="https://github.com/zuohuadong">@zuohuadong</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/lanphan.png?s=150">
-            <br>
-            <strong>Lan Phan</strong>
-            <br>
-            <a href="https://github.com/lanphan">@lanphan</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://github.com/ahkui.png?s=150">
-            <br>
-            <strong>Ahkui</strong>
-            <br>
-            <a href="https://github.com/ahkui">@ahkui</a>
-        </td>
-        <td align="center" valign="top">
-            <img width="125" height="125" src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/join-us.png">
-            <br>
-            <strong>< Join Us ></strong>
-            <br>
-            <a href="https://github.com/laradock">@laradock</a>
-        </td>
-     </tr>
-  </tbody>
-</table>
+To install the latest version of docker:
 
-### Code Contributors
+`sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin`
 
-[![Laradock Contributors][contributors-src]][contributors-href]
+release notes
 
-### Financial Contributors
+[https://docs.docker.com/engine/release-notes](https://docs.docker.com/engine/release-notes)
 
-[![Open Collective backers][backers-src]][backers-href]
+##### Step 7 add user to group
 
-You can support us using any of the methods below:
+Make sure the docker group exists
 
-<b>1:</b> [Open Collective](https://opencollective.com/laradock)
-<br>
-<b>2:</b> [Paypal](https://paypal.me/mzmmzz)
-<br>
-<b>3:</b> [Github Sponsors](https://github.com/sponsors/Mahmoudz)
-<br>
-<b>4:</b> [Patreon](https://www.patreon.com/zalt)
+`sudo groupadd docker`
+*Should already exist*
 
----
+Add your user to the docker group
 
+`sudo usermod -a -G docker <your_user_here>`
+*<your_user_here> would be nathanr in my case*
 
-## Sponsors
+##### Step 8 start at boot
 
-Sponsoring is an act of giving in a different fashion. 🌱
+The Docker service needs to be setup to run at startup. To do so, type in each command followed by enter:
 
+`sudo systemctl start docker`
+`sudo systemctl enable docker`
 
-### Gold Sponsors
+## System
 
-<p align="center">
+*IMPORTANT*
 
-<a href="https://kasynohex.com/"                      target="_blank"   style="margin-right: 4em"><img src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/custom-sponsors/PLD.png"                  height="75px"    alt="KasynoHEX.com Polska"></a>
-<a href="https://onlinecasinohex.ca/online-casinos/"  target="_blank"   style="margin-right: 4em"><img src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/custom-sponsors/CA.png"                   height="75px"    alt="Online casino list in Canada by OnlineCasinoHEX.ca"></a>
-<a href="https://aussiecasinohex.com/online-pokies/"  target="_blank"   style="margin-right: 4em"><img src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/custom-sponsors/AU.png"                   height="75px"    alt="Online pokies by AussieCasinoHEX.com"></a>
-<a href="http://apiato.io/"                           target="_blank"   style="margin-right: 4em"><img src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/custom-sponsors/apiato.png"               height="75px"    alt="Apiato Build PHP API's faster"></a>
-<!-- <a href="https://www.bestonlinecasino.com/"           target="_blank"   style="margin-right: 4em"><img src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/custom-sponsors/bestonlinecasino.jpg"     height="75px"    alt="We thank bestonlinecasino.com for their support"></a> -->
-<!-- <a href="https://casinopilotti.com/"                  target="_blank"   style="margin-right: 4em"><img src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/custom-sponsors/casinopilotti.png"        height="75px"    alt="CasinoPilotti"></a> -->
+on your local machine also run this as root. *This allows exceeding of pre-configured memory limits*
 
+`echo 'vm.max_map_count=262144' >> /etc/sysctl.conf`
 
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/0/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/0/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/1/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/1/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/2/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/2/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/3/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/3/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/4/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/4/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/5/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/5/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/6/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/6/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/7/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/7/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/8/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/8/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/9/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/9/avatar.svg?button=false&isActive=true" height="75px"></a>
+`echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf`
 
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/10/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/10/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/11/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/11/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/12/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/12/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/13/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/13/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/14/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/14/avatar.svg?button=false&isActive=true" height="75px"></a>
-<a href="https://opencollective.com/laradock/tiers/gold-sponsors/15/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/gold-sponsors/15/avatar.svg?button=false&isActive=true" height="75px"></a>
+`sysctl -p`
 
-</p>
+When you start laradock it may create the horizon and websockets log files as root owner and group. Change the permission on the storage folder.
 
-### Silver Sponsors
+`sudo chown -R youruser:yourgroup storage/`
 
-<p align="center">
+*Laradock will not change the permissions on restart.* 
+I have also created my own alias `storage` to do this for me.
 
-<!-- <a href="https://veepn.com/vpn-apps/vpn-for-chrome/"  target="_blank"   style="margin-right: 4em"><img src="https://raw.githubusercontent.com/laradock/laradock/master/.github/home-page-images/custom-sponsors/VeePN.png"                height="65px"    alt="VeePN Chrome extension"></a> -->
+### Laradock
 
+* Git [https://git-scm.com/downloads](https://git-scm.com/downloads)
+* Docker >= 17.12 [https://www.docker.com/products/docker/](https://www.docker.com/products/docker/) *following above this should be done*
 
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/0/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/0/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/1/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/1/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/2/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/2/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/3/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/3/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/4/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/4/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/5/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/5/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/6/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/6/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/7/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/7/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/8/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/8/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/9/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/9/avatar.svg?button=false&isActive=true" height="65px"></a>
+Make sure you have docker and docker compose installed. See information here [https://www.docker.com/products/docker/]) *following above this should be done*
 
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/10/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/10/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/11/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/11/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/12/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/12/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/13/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/13/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/14/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/14/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/15/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/15/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/16/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/16/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/17/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/17/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/18/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/18/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/19/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/19/avatar.svg?button=false&isActive=true" height="65px"></a>
+Laradock should live in the same directory as all your sites. Example. If your projects reside in `/home/<username>/Code` on your system then this is the same place you want to clone laradock into.
 
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/20/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/20/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/21/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/21/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/22/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/22/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/23/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/23/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/24/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/24/avatar.svg?button=false&isActive=true" height="65px"></a>
-<a href="https://opencollective.com/laradock/tiers/silver-sponsors/25/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/silver-sponsors/25/avatar.svg?button=false&isActive=true" height="65px"></a>
+Clone this repository to the same directory as you have your laravel sites. eg `/home/user/Code`
 
-</p>
+`git clone git@bitbucket.org/lionslair/laradock.git`
 
-### Bronze Sponsors
+cd into the cloned directory and run the command below. eg `/home/<username>/Code/laradock`
 
-<p align="center">
+`./up.sh`
 
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/0/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/0/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/1/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/1/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/2/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/2/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/3/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/3/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/4/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/4/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/5/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/5/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/6/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/6/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/7/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/7/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/8/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/8/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/9/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/9/avatar.svg?button=false&isActive=true" height="55px"></a>
+Inside this bash script is the following. You may need to the paths and what services you want to bring up. 
 
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/10/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/10/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/11/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/11/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/12/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/12/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/13/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/13/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/14/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/14/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/15/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/15/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/16/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/16/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/17/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/17/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/18/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/18/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/19/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/19/avatar.svg?button=false&isActive=true" height="55px"></a>
+```
+#!/bin/bash
 
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/20/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/20/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/21/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/21/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/22/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/22/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/23/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/23/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/24/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/24/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/25/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/25/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/26/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/26/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/27/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/27/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/28/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/28/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/29/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/29/avatar.svg?button=false&isActive=true" height="55px"></a>
+cd ~/Code/laradock; docker compose up -d caddy mysql adminer redis laravel-horizon selenium workspace php-worker mailhog
+```
 
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/30/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/30/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/31/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/31/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/32/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/32/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/33/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/33/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/34/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/34/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/35/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/35/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/36/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/36/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/37/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/37/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/38/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/38/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/39/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/39/avatar.svg?button=false&isActive=true" height="55px"></a>
+## Sites
 
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/40/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/40/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/41/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/41/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/42/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/42/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/43/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/43/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/44/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/44/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/45/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/45/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/46/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/46/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/47/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/47/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/48/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/48/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/49/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/49/avatar.svg?button=false&isActive=true" height="55px"></a>
+## Hosts file
 
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/50/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/50/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/51/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/51/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/52/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/52/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/53/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/53/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/54/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/54/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/55/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/55/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/56/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/56/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/57/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/57/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/58/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/58/avatar.svg?button=false&isActive=true" height="55px"></a>
-<a href="https://opencollective.com/laradock/tiers/bronze-sponsors/59/website" target="_blank"><img src="https://opencollective.com/laradock/tiers/bronze-sponsors/59/avatar.svg?button=false&isActive=true" height="55px"></a>
+Ensure to add the website hosts to your `/etc/hosts` file eg
 
-</p>
+```
+127.0.0.1 site1.test
+
+127.0.0.1 site2.test
+```
+
+Also add these for convenience add these
+
+```
+127.0.0.1       mysql
+
+127.0.0.1       elasticsearch
+
+127.0.0.1       redis
+
+127.0.0.1       kibana
+
+127.0.0.1       php-worker
+
+127.0.0.1       puppeteer
+
+127.0.0.1       mailhog
+
+127.0.0.1       minio
+
+127.0.0.1       mssql
+
+127.0.0.1       adminer
+
+127.0.0.1       meilisearch
+
+127.0.0.1       minio.test
+
+127.0.0.1       adminer.test
+
+127.0.0.1       mailhog.test
+
+127.0.0.1       meilisearch.test
+```
+
+### Caddy (Webserver)
+
+In order to effortlessly run local sites V2with https I have used [Caddy ](https://caddyserver.com) webserver *Currently have a PR open with Laradock to move to Caddy v2 which is what I am using.*
+
+Configure sites you want to server in `./caddy/caddy/Caddyfile`
+
+*You will see I have a number of sites in this file. Some will be familure, and some are past projects* edit as needed.
+
+Configuring a new site is very simple. You can work out what is needed by reviewing already configured sites and to learn more visit [https://caddyserver.com/docs/](https://caddyserver.com/docs/).
+
+## Databases
+
+You can configure databases to be created and privileges automatically assigned in `mysql/docker-entrypoint-initdb.d/createdb.sql`
+
+You can access the mysql host locally with `mysql` if you added the hosts record above.
+
+You can use the following for db authentication.
+```
+DB_USERNAME=homestead
+DB_PASSWORD=secret
+```
+
+or 
+```
+DB_USERNAME=root
+DB_PASSWORD=root
+```
+
+To execute this file do `docker compose exec mysql bash` or use the alias if setup `lara-mysql` to enter the container. *(see aliases later)*
+
+then run the file `mysql -u root -proot < ./docker-entrypoint-initdb.d/createdb.sql` This will create the Database and assign the user access to each.
+
+## Horizon
+
+Laravel Horizon runs as it's own contain within the `./laravel-horizon` directory. In order to configure new Horizon 
+setup's make a copy of `laravel-horizon/supervisord.d/laravel-horizon.conf.example` in the same directory. eg `laravel-horizon-flooringlab.conf`
+
+The file is simply the supervisor config file.
+
+## Dusk
+
+In order to run dusk tests you need to ensure the following exists at the end of the *selenium* config in `./docker-compose.yml`
+*You will see I already have a few configured*
+
+```
+depends_on:
+  - caddy
+links:
+  - caddy:bestratedtransport.test
+  - caddy:flooringlab.test
+  - caddy:leeeletrix.test
+  - caddy:myoffer.test
+  - caddy:esg.test
+  
+```
+
+Take note each time you add a new site you will need to add it to the links reference [https://github.com/laradock/laradock/issues/907](https://github.com/laradock/laradock/issues/907)
+
+## Scheduler
+
+Cron scheduler is configured in the workspace container. When you need a new crontab line edit this file `./workspace/crontab/laradock`
+
+Standard crontab configuration is used. In order for this to run you will need to rebuild the container for it get applied. Run the following.
+
+`docker compose build --no-cache workspace`
+
+## Aliases
+
+I have created some aliases for my system to make starting, stopping and ssh into a little easier.
+
+#### Start
+`alias lara='cd ~/Code/laradock; ./up.sh'`
+
+#### Access via SSH
+
+`alias lara-bash='cd ~/Code/laradock; docker compose exec --user=laradock workspace bash'`
+
+#### Restart
+
+`alias lara-restart='cd ~/Code/laradock; ./restart.sh'`
+
+#### Stop
+
+`alias lara-stop='cd ~/Code/laradock; ./down.sh'`
+
+#### Redis
+
+`alias lara-redis='cd ~/Code/laradock; docker compose exec redis bash'`
+
+#### Mysql
+
+`alias lara-mysql='cd ~/Code/laradock; docker compose exec mysql bash'`
+
+#### Restart workers
+
+`alias lara-workers-restart='cd ~/Code/laradock; docker compose restart laravel-horizon php-worker'`
+
+#### Extra containers
+You can add new ones or use any of the other existing containers to your environment. For easy add them to `up.sh`, `down.sh` and `restart.sh` scripts.
+
+Example of custom containers added are:
+eg to use the sqs_extended drivers like on AWS add the below. These two should only be used when testing something specific. 
+
+`sqs sqs-ui`
+
+## Local UI's
+
+Below are some of the UI's made available when using the given containers.
+
+Mailhog: [https://mailhog.test](https://mailhog.test)  *(requires mailhog container)*
+
+Minio: [https://minio.test](https://mailhog.test)  *(requires minio container)*
+
+Minio: [https://meilisearch.test](https://meilisearch.test)  *(requires meilisearch container)*
+
+Adminer [https://adminer.test](https://adminer.test) *(requires adminer container)*
+
+Kibana [http://localhost:5601](http://localhost:5601) *(requires adminer container)*
+
+Phpmyadmin [http://localhost:8081/](http://localhost:8081/) *(requires phpmyadmin container. You can not use phpmyadmin and adminer at the same time. I prefer adminer. You could change ports but thats up to you)*
+
+SQS [http://localhost:9325/](http://localhost:9325/) *(requires a running sqs-ui container)*
 
 
-You can sponsor us using any of the methods below:
+Others have their own also but these are the ones I have used so far.
 
-<b>1:</b> Sponsor via [Open Collective](https://opencollective.com/laradock/).
-<br>
-<b>2:</b> Email us at <a href = "mailto: support@laradock.io">support@laradock.io</a>.
+## MeiliSearch Settings
 
-*Sponsors logos are displayed on the [github repository](https://github.com/laradock/laradock/) page and the [documentation website](http://laradock.io/) home page.*
+Web UI MeiliSearch: [https://meilisearch.test](https://meilisearch.test) or [http://localhost:7700](http://localhost:7700)
 
-## License
+The private API key is `masterkey`
 
-[MIT](https://github.com/laradock/laradock/blob/master/LICENSE) © Mahmoud Zalt
+## MailHog Settings
+
+Use these settings to use mailhog for local delivery
+
+```
+MAIL_DRIVER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+```
+
+Web UI Mailhog: [https://mailhoog.test](https://mailhoog.test)
+
+## Minio Settings
+
+Web UI minio:  [https://minio.test](https://minio.test) or `http://localhost:9000` 
+
+The initial login details are
+```
+access key: access
+secret key: secretkey
+```
+
+Create a bucket either through the webui or using the `mc client: bash mc mb minio/bucket`
+
+When configuring your other clients use the following details in your env
+
+```
+  AWS_URL=http://minio:9000
+  AWS_ACCESS_KEY_ID=access
+  AWS_SECRET_ACCESS_KEY=secretkey
+  AWS_DEFAULT_REGION=us-east-1
+  AWS_BUCKET=test
+  AWS_PATH_STYLE=true
+```
+
+In filesystems.php you should use the following details (s3): 
+```
+'s3' => [
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'endpoint' => env('AWS_URL'),
+            'use_path_style_endpoint' => env('AWS_PATH_STYLE', false)
+        ],
+```
+
+`'AWS_PATH_STYLE'` shout set to true only for local purpose
+
+## Microsoft SQL Server
+
+[https://hub.docker.com/_/microsoft-mssql-server](https://hub.docker.com/_/microsoft-mssql-server)
+
+Image uses `FROM mcr.microsoft.com/mssql/server:2017-latest-ubuntu` but could be changed to one of the tags above.
 
 
-[comment]: # (Open Collective Tiers)
 
-[contributors-src]: https://opencollective.com/laradock/contributors.svg?width=890&button=false&isActive=true
-[contributors-href]: https://github.com/laradock/laradock/graphs/contributors
-[backers-src]: https://opencollective.com/laradock/tiers/awesome-backers.svg?width=890&button=false&isActive=true
-[backers-href]: https://opencollective.com/laradock#contributors
+## Docker commands
 
-[gold-sponsors-src]: https://opencollective.com/laradock/tiers/gold-sponsors.svg?avatarHeight=80&width=890&button=false&isActive=true
-[gold-sponsors-href]: https://opencollective.com/laradock#contributors
-[silver-sponsors-src]: https://opencollective.com/laradock/tiers/silver-sponsors.svg?avatarHeight=64&width=890&button=false&isActive=true
-[silver-sponsors-href]: https://opencollective.com/laradock#contributors
-[bronze-sponsors-src]: https://opencollective.com/laradock/tiers/bronze-sponsors.svg?avatarHeight=48&width=890&button=false&isActive=true
-[bronze-sponsors-href]: https://opencollective.com/laradock#contributors
+*Mostly used for cleanup or regenerating all containers*
+
+Remove all docker containers in order to rebuild by running
+
+`docker compose down`
+
+then to clean up containers
+
+`docker container prune`
+
+then to clean up images
+
+`docker image prune -a`
+
+then to clean up volumes *(Getting rid of the volumes will lose data. eg local databases. Elastic Search indexes If you need that backup first,)*
+
+`docker volume prune`
+
+Then run `lara` again and all will be rebuilt.
+
+In order to rebuild a container run
+
+`docker compose build --no-cache laravel-horizon`
+
+It is best to then restart that container or sometimes do `lara-restart` or run `./restart.sh`
+
+## More notes
+
+When adding a new site to local eg example.test
+
+* Add the host to the Caddyfile
+* Add the new crontab setting to `./workspace/crontab/laradock`
+
+Then run `docker compose build --no-cache caddy workspace` *will take just a few minutes*
+
+If you have added a horizon config or normal supervisor configs to php-worker then you will want to run all four containers. eg
+
+`docker compose build --no-cache caddy workspace laravel-horizon php-worker`
+
+All should be setup and working. run `lara-restart` or `./restart.sh`
+
+## Extra
+
+We are running a local SQS type service. Repo is here https://hub.docker.com/r/roribio16/alpine-sqs (used for the UI) and https://hub.docker.com/r/localstack/localstack (used for the actual SQS mock)
+- Used for Q
+
+## .env file setup
+
+Below is an example of what my .env file looks like to access and work with laradock hosts *(taken from flooring lab)*
+
+```
+APP_NAME="Flooring Lab"
+APP_ENV=local
+APP_KEY=randomstringhere
+APP_DEBUG=true
+APP_URL=https://flooringlab.test
+BUGHERD_ENABLED=false
+DEBUGBAR_ENABLED=true
+
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=flooringlab
+DB_USERNAME=homestead
+DB_PASSWORD=secret
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=redis
+QUEUE_CONNECTION=redis
+SESSION_DRIVER=redis
+SESSION_LIFETIME=120
+
+REDIS_HOST=redis
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=noreply@flooringlab.test
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+## Ngrok
+
+If you need to publish your local env to the web use ngrok. Install in for your host system then use the below to forward requests to your local env.  
+
+`ngrok http -host-header=cabmaster.test 80`
+
+Lately I have been trying out expose [https://expose.dev/docs](https://expose.dev/docs)
+
+## Sites using legacy container
+
+* [https://asbestosedge.test](https://asbestosedge.test)
+* [https://defex.test](https://defex.test)
+* [https://dev.earthsolutionsgroup.com.au](https://dev.earthsolutionsgroup.com.au)
+* [https://dev.esgportal.com](https://dev.esgportal.com)
+* [https://dev.soildeclaration.com](https://dev.soildeclaration.com)
+* [https://kontrastinteriors.test](https://kontrastinteriors.test)
+* [https://mlilyportal.test](https://mlilyportal.test) *horizon
+* [https://ombord.test](https://ombord.test)
+* [https://phs.test](https://phs.test)
+* [https://washed.test](https://washed.test)
 
 

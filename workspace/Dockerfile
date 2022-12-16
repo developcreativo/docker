@@ -76,6 +76,9 @@ RUN set -xe; \
       libzip-dev zip unzip \
       # Install the zip extension
       php${LARADOCK_PHP_VERSION}-zip \
+      php${LARADOCK_PHP_VERSION}-tokenizer \
+      php${LARADOCK_PHP_VERSION}-xmlwriter \
+      php${LARADOCK_PHP_VERSION}-simplexml \
       # nasm
       nasm && \
       php -m | grep -q 'zip'
