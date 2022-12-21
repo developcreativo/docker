@@ -43,6 +43,9 @@ RUN set -xe; \
       git \
       wget \
       curl \
+      git-flow \
+      tesseract-ocr tesseract-ocr-spa tesseract-ocr-spa tesseract-ocr-rus tesseract-ocr-por tesseract-ocr-pol tesseract-ocr-ita tesseract-ocr-fra tesseract-ocr-eus tesseract-ocr-deu \
+      poppler-utils \
       #
       #--------------------------------------------------------------------------
       # Mandatory Software's Installation
@@ -227,7 +230,11 @@ RUN if [ ${INSTALL_XDEBUG} = true ]; then \
   # Install the xdebug extension
   # https://xdebug.org/docs/compat
   if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ] || { [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && { [ $(php -r "echo PHP_MINOR_VERSION;") = "4" ] || [ $(php -r "echo PHP_MINOR_VERSION;") = "3" ] ;} ;}; then \
-    pecl install xdebug-3.1.4; \
+    if [ ${LARADOCK_PHP_VERSION} = "8.2" ]; then \
+      pecl install xdebug-3.2.0; \
+    else \
+      pecl install xdebug-3.1.4; \
+    fi; \
   else \
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
       pecl install xdebug-2.5.5; \

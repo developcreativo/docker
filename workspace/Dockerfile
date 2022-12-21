@@ -104,6 +104,12 @@ RUN git config --global user.email echo ${LARADOCK_EMAIL_GIT}
 RUN git config --global user.name echo ${LARADOCK_NAME_GIT}
 
 
+
+# Download browscap.ini
+RUN mkdir /var/lib/browscap \
+    && wget http://browscap.org/stream?q=BrowsCapINI -O /var/lib/browscap/browscap.ini
+
+    
 ARG TZ=UTC
 ENV TZ ${TZ}
 
@@ -204,6 +210,10 @@ USER laradock
 
 RUN echo "" >> ~/.bashrc && \
     echo 'export PATH="/var/www/vendor/bin:$PATH"' >> ~/.bashrc
+
+
+
+    
 
 ###########################################################################
 # Crontab
@@ -724,6 +734,10 @@ USER laradock
 # Node / NVM:
 ###########################################################################
 
+###########################################################################
+# Node / NVM:
+###########################################################################
+
 # Check if NVM needs to be installed
 ARG NODE_VERSION=node
 ENV NODE_VERSION ${NODE_VERSION}
@@ -749,7 +763,7 @@ ENV NVM_NODEJS_ORG_MIRROR ${NVM_NODEJS_ORG_MIRROR}
 RUN if [ ${INSTALL_NODE} = true ]; then \
     # Install nvm (A Node Version Manager)
     mkdir -p $NVM_DIR && \
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash \
         && . $NVM_DIR/nvm.sh \
         && nvm install ${NODE_VERSION} \
         && nvm use ${NODE_VERSION} \
@@ -773,7 +787,6 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
         && if [ ${INSTALL_NPM_ANGULAR_CLI} = true ]; then \
         npm install -g @angular/cli \
         ;fi \
-        && ln -s `npm bin --global` /home/laradock/.node-bin \
 ;fi
 
 # Wouldn't execute when added to the RUN statement in the above block
@@ -792,9 +805,6 @@ RUN if [ ${INSTALL_NODE} = true ]; then \
     echo 'export NVM_DIR="/home/laradock/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
 ;fi
-
-# Add PATH for node
-ENV PATH $PATH:/home/laradock/.node-bin
 
 # Make it so the node modules can be executed with 'docker-compose exec'
 # We'll create symbolic links into '/usr/local/bin'.
@@ -1844,3 +1854,8 @@ RUN apt-get update \
         php7.4-memcached \
         php7.4-gd \
         php7.4-dev
+
+#php_codesniffer vscode developcreaivo.
+RUN set -xe; \
+    cd /home/laradock/.composer/vendor/squizlabs/php_codesniffer &&\
+    /usr/bin/php7.4 /usr/local/bin/composer install
