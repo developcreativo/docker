@@ -4,7 +4,7 @@ WORKDIR /usr/src/app/react
 
 COPY package*.json ./
 
-RUN npm install node-sass && npm install --legacy-peer-deps
+RUN npm install node-sass && npm install
 
 EXPOSE 3000
 

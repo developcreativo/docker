@@ -41,7 +41,6 @@ RUN apk --update add wget \
   fi
 
 
-
 RUN pecl channel-update pecl.php.net; \
   docker-php-ext-install mysqli mbstring pdo pdo_mysql xml pcntl; \
   if [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "80100" ] || \
@@ -509,6 +508,18 @@ RUN set -xe; \
   && docker-php-ext-enable ssdb \
   ;fi
 
+###########################################################################
+# Intl:
+###########################################################################
+
+ARG INSTALL_INTL=false
+
+RUN if [ ${INSTALL_INTL} = true ]; then \
+    apk add icu-dev && \
+    docker-php-ext-configure intl && \
+    docker-php-ext-install intl && \
+    docker-php-ext-enable intl \
+;fi
 
 ############################################################################
 ## Event:

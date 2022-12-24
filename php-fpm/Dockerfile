@@ -44,7 +44,16 @@ RUN set -xe; \
       wget \
       curl \
       git-flow \
-      tesseract-ocr tesseract-ocr-spa tesseract-ocr-spa tesseract-ocr-rus tesseract-ocr-por tesseract-ocr-pol tesseract-ocr-ita tesseract-ocr-fra tesseract-ocr-eus tesseract-ocr-deu \
+      tesseract-ocr \
+      tesseract-ocr-spa \
+      tesseract-ocr-spa \
+      tesseract-ocr-rus \
+      tesseract-ocr-por \
+      tesseract-ocr-pol \
+      tesseract-ocr-ita \
+      tesseract-ocr-fra \
+      tesseract-ocr-eus \
+      tesseract-ocr-deu \
       poppler-utils \
       #
       #--------------------------------------------------------------------------
@@ -65,15 +74,8 @@ RUN set -xe; \
       fi && \
       # Install the zip extension
       docker-php-ext-install zip && \
-      curl -s https://getcomposer.org/installer | php && \
-      mv composer.phar /usr/local/bin/composer && \
-      composer selfupdate 2.2.12 && \
       php -m | grep -q 'zip'
 
-
-# Download browscap.ini
-RUN mkdir /var/lib/browscap \
-    && wget http://browscap.org/stream?q=BrowsCapINI -O /var/lib/browscap/browscap.ini
 #
 #--------------------------------------------------------------------------
 # Optional Software's Installation
@@ -84,6 +86,9 @@ RUN mkdir /var/lib/browscap \
 # Example:
 #   - INSTALL_SOAP=true
 #
+# Download browscap.ini
+RUN mkdir /var/lib/browscap \
+    && wget http://browscap.org/stream?q=BrowsCapINI -O /var/lib/browscap/browscap.ini
 
 ###########################################################################
 # BZ2:
@@ -658,6 +663,7 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
         && docker-php-ext-enable \
                 oci8 \
   ;fi
+
 ###########################################################################
 # IonCube Loader:
 ###########################################################################
@@ -735,7 +741,8 @@ ARG INSTALL_LDAP=false
 
 RUN if [ ${INSTALL_LDAP} = true ]; then \
     apt-get install -yqq libldap2-dev && \
-    docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
+    ARCH=$(arch)   && \
+    docker-php-ext-configure ldap --with-libdir="lib/${ARCH}-linux-gnu/" && \
     docker-php-ext-install ldap \
 ;fi
 
@@ -826,6 +833,7 @@ RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
     php -m | grep -q 'imagick' \
 ;fi
 RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
+
 ###########################################################################
 # SMB:
 ###########################################################################
@@ -1036,7 +1044,7 @@ RUN if [ ${INSTALL_AUDIOWAVEFORM} = true ]; then \
    && make \
    && make install \
 ;fi
- 
+
 
 #####################################
 # wkhtmltopdf:
@@ -1296,7 +1304,7 @@ RUN if [ ${INSTALL_DNSUTILS} = true ]; then \
 # Check PHP version:
 ###########################################################################
 
-RUN set -xe; php -v | head -n 1 | grep -q "PHP ${LARADOCK_PHP_VERSION}."
+RUN set -xe; php -v | grep -q "PHP ${LARADOCK_PHP_VERSION}."
 
 #
 #--------------------------------------------------------------------------

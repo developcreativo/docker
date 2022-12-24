@@ -1,8 +1,5 @@
 {
     "require": {
-		"squizlabs/php_codesniffer": "*",
-    "ext-tokenizer": "*", 
-    "ext-xmlwriter": "*", 
-    "ext-simplexml": "*" 
+        "squizlabs/php_codesniffer": "*"
     }
 } 

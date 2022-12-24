@@ -207,32 +207,6 @@ services:
       links:
         - docker-in-docker
 
-    clamd:
-      build:
-        context: ./clamavd
-      ports:
-        - "3311:3311"
-        - "3310:3310"
-      depends_on:
-        - workspace
-        - php-fpm
-      extra_hosts:
-        - "dockerhost:${DOCKER_HOST_IP}"
-      networks:
-        - frontend
-        - backend
-    clamdscan:
-      build:
-        context: ./clamavd/test
-      command: tail -F anything
-      depends_on:
-        - clamd
-      links:
-        - clamd:clamd
-      environment:
-        - CLAMD_PORT=3310
-        - CLAMD_HOST=clamd
-
 ### PHP-FPM ##############################################
     php-fpm:
       build:
@@ -344,6 +318,7 @@ services:
       links:
         - docker-in-docker
 
+
 ### PHP-FPM ##############################################
     php-fpm-7.4:
       build:
@@ -420,6 +395,7 @@ services:
           - INSTALL_TRADER=${PHP_FPM_INSTALL_TRADER}
           - INSTALL_EVENT=${PHP_FPM_INSTALL_EVENT}
           - DOWNGRADE_OPENSSL_TLS_AND_SECLEVEL=${PHP_DOWNGRADE_OPENSSL_TLS_AND_SECLEVEL}
+          - DOWNGRADE_OPENSSL_TLS_VERSION=${PHP_DOWNGRADE_OPENSSL_TLS_VERSION}
           - PUID=${PHP_FPM_PUID}
           - PGID=${PHP_FPM_PGID}
           - IMAGEMAGICK_VERSION=${PHP_FPM_IMAGEMAGICK_VERSION}
@@ -442,7 +418,7 @@ services:
         - "dockerhost:${DOCKER_HOST_IP}"
       environment:
         - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
-        - DOCKER_HOST=tcp://docker-in-docker:2375
+        - DOCKER_HOST=tcp://docker-in-docker:2376
         - DOCKER_TLS_VERIFY=1
         - DOCKER_TLS_CERTDIR=/certs
         - DOCKER_CERT_PATH=/certs/client
@@ -453,6 +429,7 @@ services:
         - backend
       links:
         - docker-in-docker
+
 
 ### PHP Worker ############################################
     php-worker:
@@ -492,12 +469,10 @@ services:
           - INSTALL_XMLRPC=${PHP_WORKER_INSTALL_XMLRPC}
           - INSTALL_SSDB=${PHP_WORKER_INSTALL_SSDB}
           - INSTALL_EVENT=${PHP_WORKER_INSTALL_EVENT}
+          - INSTALL_INTL=${PHP_WORKER_INSTALL_INTL}
           - PUID=${PHP_WORKER_PUID}
           - PGID=${PHP_WORKER_PGID}
           - IMAGEMAGICK_VERSION=${PHP_WORKER_IMAGEMAGICK_VERSION}
-      ports:
-        - "6001:6001"
-        - "6002:6002"
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
@@ -610,7 +585,6 @@ services:
         - "${VARNISH_BACKEND_PORT}:81"
       depends_on:
         - php-fpm
-        - php-fpm-7.4
       networks:
         - frontend
         - backend
@@ -648,7 +622,6 @@ services:
         - "${APACHE_HOST_HTTPS_PORT}:443"
       depends_on:
         - php-fpm
-        - php-fpm-7.4
       networks:
         - frontend
         - backend
@@ -1048,7 +1021,6 @@ services:
         - ${DATA_PATH_HOST}/cassandra:/var/lib/cassandra
       depends_on:
         - php-fpm
-        - php-fpm-7.4
       networks:
         - backend
 
@@ -1082,7 +1054,6 @@ services:
       hostname: laradock-gearman
       depends_on:
         - php-fpm
-        - php-fpm-7.4
       networks:
         - backend
 
@@ -1109,7 +1080,6 @@ services:
         - "${CADDY_HOST_HTTPS_PORT}:443"
       depends_on:
         - php-fpm
-        - php-fpm-7.4
       networks:
         - frontend
         - backend
@@ -1147,7 +1117,6 @@ services:
         - "${ADM_PORT}:8080"
       depends_on:
         - php-fpm
-        - php-fpm-7.4
       networks:
         - frontend
         - backend
@@ -1191,6 +1160,8 @@ services:
         - cluster.name=laradock-cluster
         - node.name=laradock-node
         - bootstrap.memory_lock=true
+        - xpack.security.enabled=false
+        - xpack.security.transport.ssl.enabled=false
         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
         - cluster.initial_master_nodes=laradock-node
       ulimits:
@@ -1205,7 +1176,6 @@ services:
         - "${ELASTICSEARCH_HOST_TRANSPORT_PORT}:9300"
       depends_on:
         - php-fpm
-        - php-fpm-7.4
       networks:
         - frontend
         - backend

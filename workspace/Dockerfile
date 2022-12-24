@@ -15,7 +15,6 @@
 ARG LARADOCK_PHP_VERSION
 ARG LARADOCK_EMAIL_GIT
 ARG LARADOCK_NAME_GIT
-
 ARG BASE_IMAGE_TAG_PREFIX=latest
 FROM laradock/workspace:${BASE_IMAGE_TAG_PREFIX}-${LARADOCK_PHP_VERSION}
 
@@ -57,10 +56,19 @@ RUN set -xe; \
     useradd -l -u ${PUID} -g laradock -m laradock -G docker_env && \
     usermod -p "*" laradock -s /bin/bash && \
     apt-get install -yqq \
-      wget \
       apt-utils \
       git-flow \
-      tesseract-ocr tesseract-ocr-spa tesseract-ocr-spa tesseract-ocr-rus tesseract-ocr-por tesseract-ocr-pol tesseract-ocr-ita tesseract-ocr-fra tesseract-ocr-eus tesseract-ocr-deu \
+      wget \
+      tesseract-ocr \
+      tesseract-ocr-spa \
+      tesseract-ocr-spa \
+      tesseract-ocr-rus \
+      tesseract-ocr-por \
+      tesseract-ocr-pol \
+      tesseract-ocr-ita \
+      tesseract-ocr-fra \
+      tesseract-ocr-eus \
+      tesseract-ocr-deu \
       poppler-utils \
       #
       #--------------------------------------------------------------------------
@@ -76,13 +84,42 @@ RUN set -xe; \
       libzip-dev zip unzip \
       # Install the zip extension
       php${LARADOCK_PHP_VERSION}-zip \
-      php${LARADOCK_PHP_VERSION}-tokenizer \
-      php${LARADOCK_PHP_VERSION}-xmlwriter \
-      php${LARADOCK_PHP_VERSION}-simplexml \
       # nasm
       nasm && \
       php -m | grep -q 'zip'
 
+
+#github
+RUN git config --global user.email echo ${LARADOCK_EMAIL_GIT}
+RUN git config --global user.name echo ${LARADOCK_NAME_GIT}
+
+
+# Download browscap.ini
+RUN mkdir /var/lib/browscap \
+    && wget http://browscap.org/stream?q=BrowsCapINI -O /var/lib/browscap/browscap.ini
+
+
+RUN apt-get install -y --allow-downgrades --allow-remove-essential \
+        --allow-change-held-packages \
+        php7.4-cli \
+        php7.4-common \
+        php7.4-curl \
+        php7.4-intl \
+        php7.4-json \
+        php7.4-xml \
+        php7.4-mbstring \
+        php7.4-mysql \
+        php7.4-pgsql \
+        php7.4-pdo \
+        php7.4-redis \
+        php7.4-sqlite \
+        php7.4-sqlite3 \
+        php7.4-zip \
+        php7.4-imagick \
+        php7.4-bcmath \
+        php7.4-memcached \
+        php7.4-gd \
+        php7.4-dev
 #
 #--------------------------------------------------------------------------
 # Optional Software's Installation
@@ -99,17 +136,6 @@ RUN set -xe; \
 # Set Timezone
 ###########################################################################
 
-#github
-RUN git config --global user.email echo ${LARADOCK_EMAIL_GIT}
-RUN git config --global user.name echo ${LARADOCK_NAME_GIT}
-
-
-
-# Download browscap.ini
-RUN mkdir /var/lib/browscap \
-    && wget http://browscap.org/stream?q=BrowsCapINI -O /var/lib/browscap/browscap.ini
-
-    
 ARG TZ=UTC
 ENV TZ ${TZ}
 
@@ -120,6 +146,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ###########################################################################
 
 USER root
+
 # Add pdf
 COPY ./topdf.sh /bin/topdf
 COPY ./aliases.sh /root/aliases.sh
@@ -211,9 +238,10 @@ USER laradock
 RUN echo "" >> ~/.bashrc && \
     echo 'export PATH="/var/www/vendor/bin:$PATH"' >> ~/.bashrc
 
-
-
-    
+#php_codesniffer vscode developcreaivo.
+RUN set -xe; \
+    cd /home/laradock/.composer/vendor/squizlabs/php_codesniffer &&\
+    /usr/bin/php7.4 /usr/local/bin/composer install
 
 ###########################################################################
 # Crontab
@@ -361,7 +389,11 @@ RUN if [ ${INSTALL_XDEBUG} = true ]; then \
   # https://xdebug.org/docs/compat
   apt-get install -yqq pkg-config php-xml php${LARADOCK_PHP_VERSION}-xml && \
   if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ] || { [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && { [ $(php -r "echo PHP_MINOR_VERSION;") = "4" ] || [ $(php -r "echo PHP_MINOR_VERSION;") = "3" ] ;} ;}; then \
-    pecl install xdebug-3.1.4; \
+    if [ ${LARADOCK_PHP_VERSION} = "8.2" ]; then \
+      pecl install xdebug-3.2.0; \
+    else \
+      pecl install xdebug-3.1.4; \
+    fi; \
   else \
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
       pecl install xdebug-2.5.5; \
@@ -734,10 +766,6 @@ USER laradock
 # Node / NVM:
 ###########################################################################
 
-###########################################################################
-# Node / NVM:
-###########################################################################
-
 # Check if NVM needs to be installed
 ARG NODE_VERSION=node
 ENV NODE_VERSION ${NODE_VERSION}
@@ -1008,6 +1036,7 @@ ARG INSTALL_LARAVEL_ENVOY=false
 
 RUN if [ ${INSTALL_LARAVEL_ENVOY} = true ]; then \
     # Install the Laravel Envoy
+    composer global config --no-plugins allow-plugins.kylekatarnls/update-helper true && \
     composer global require laravel/envoy \
 ;fi
 
@@ -1553,6 +1582,7 @@ ARG INSTALL_PROTOC=false
 ARG PROTOC_VERSION
 
 RUN if [ ${INSTALL_PROTOC} = true ]; then \
+  apt-get -yqq install sudo wget unzip && \
   if [ ${PROTOC_VERSION} = "latest" ]; then \
     REAL_PROTOC_VERSION=$(curl -s https://api.github.com/repos/protocolbuffers/protobuf/releases/latest | \
       sed -nr 's/.*"tag_name":\s?"v(.+?)".*/\1/p'); \
@@ -1560,10 +1590,10 @@ RUN if [ ${INSTALL_PROTOC} = true ]; then \
     REAL_PROTOC_VERSION=${PROTOC_VERSION}; \
   fi && \
   PROTOC_ZIP=protoc-${REAL_PROTOC_VERSION}-linux-x86_64.zip; \
-  curl -L -o /tmp/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v${REAL_PROTOC_VERSION}/${PROTOC_ZIP} && \
-  unzip -q -o /tmp/protoc.zip -d /usr/local bin/protoc && \
-  unzip -q -o /tmp/protoc.zip -d /usr/local 'include/*' && \
-  rm -f /tmp/protoc.zip && \
+  wget https://github.com/protocolbuffers/protobuf/releases/download/v${REAL_PROTOC_VERSION}/${PROTOC_ZIP} && \
+  unzip -q -o ${PROTOC_ZIP} -d /usr/local bin/protoc && \
+  unzip -q -o ${PROTOC_ZIP} -d /usr/local 'include/*' && \
+  rm -f ${PROTOC_ZIP} && \
   chmod +x /usr/local/bin/protoc && \
   chmod -R +r /usr/local/include/google \
 ;fi
@@ -1781,8 +1811,10 @@ RUN set -eux; \
       make &&\
       make install &&\
       rm /tmp/libevent.tar.gz &&\
-      echo "extension=sockets.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/sockets.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/sockets.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-sockets.ini && \
+      if [ ! -f /etc/php/${LARADOCK_PHP_VERSION}/mods-available/sockets.ini ]; then\
+        echo "extension=sockets.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/sockets.ini; \
+      fi &&\
+      ln -sf /etc/php/${LARADOCK_PHP_VERSION}/mods-available/sockets.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-sockets.ini && \
       curl -L -o /tmp/event.tar.gz http://pecl.php.net/get/event-3.0.6.tgz &&\
       mkdir -p /tmp/event-php &&\
       tar -C /tmp/event-php -zxvf /tmp/event.tar.gz --strip 1 &&\
@@ -1793,7 +1825,7 @@ RUN set -eux; \
       make install &&\
       rm /tmp/event.tar.gz &&\
       echo "extension=event.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/event.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/event.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-event.ini && \
+      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/event.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-event.ini && \
       php -m  | grep -q 'event' \
 ;fi
 
@@ -1824,38 +1856,3 @@ RUN apt-get clean && \
 
 # Set default work directory
 WORKDIR /var/www
-
-
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends jpegoptim optipng pngquant gifsicle ffmpeg imagemagick ghostscript php-imagick coreutils libjpeg-dev libpng-dev libtiff-dev libgif-dev graphviz
-RUN npm install -g svgo
-
-# Install laravel legacy version
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --allow-downgrades --allow-remove-essential \
-        --allow-change-held-packages \
-        php7.4-cli \
-        php7.4-common \
-        php7.4-curl \
-        php7.4-intl \
-        php7.4-json \
-        php7.4-xml \
-        php7.4-mbstring \
-        php7.4-mysql \
-        php7.4-pgsql \
-        php7.4-pdo \
-        php7.4-redis \
-        php7.4-sqlite \
-        php7.4-sqlite3 \
-        php7.4-zip \
-        php7.4-imagick \
-        php7.4-bcmath \
-        php7.4-memcached \
-        php7.4-gd \
-        php7.4-dev
-
-#php_codesniffer vscode developcreaivo.
-RUN set -xe; \
-    cd /home/laradock/.composer/vendor/squizlabs/php_codesniffer &&\
-    /usr/bin/php7.4 /usr/local/bin/composer install
