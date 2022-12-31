@@ -207,6 +207,15 @@ services:
       links:
         - docker-in-docker
 
+### gotenberg convesor de archivos ###
+    gotenberg:
+      build:
+        context: ./gotenberg
+      ports:
+        - "${GOTENBER_PORT}:3000"
+      networks:
+        - frontend
+        - backend
 ### PHP-FPM ##############################################
     php-fpm:
       build:

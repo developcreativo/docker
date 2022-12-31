@@ -70,6 +70,17 @@ RUN set -xe; \
       tesseract-ocr-eus \
       tesseract-ocr-deu \
       poppler-utils \
+      unoconv \
+      ffmpeg \
+      meshlab \
+      dia \
+      gnuplot \
+      curl \
+      featherpad \
+      libreoffice-common \
+      libreoffice-java-common \
+      imagemagick \
+      pandoc \
       #
       #--------------------------------------------------------------------------
       # Mandatory Software's Installation
