@@ -1,0 +1,9 @@
+[program:websockets]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/fikrea/artisan websockets:serve
+autostart=true
+autorestart=true
+numprocs=1
+user=laradock
+redirect_stderr=true
+stdout_logfile=/var/www/fikrea/storage/logs/websockets.log

@@ -206,16 +206,38 @@ services:
         - backend
       links:
         - docker-in-docker
-
+## docker run --rm -p 3005:3005 gotenberg/gotenberg:7 gotenberg --api-port 3005 --api-timeout 1200s
 ### gotenberg convesor de archivos ###
     gotenberg:
-      build:
-        context: ./gotenberg
+      image: thecodingmachine/gotenberg:7
+      restart: always
+      command:
+        - "gotenberg"
+        - "--api-port=3005"
+        - "--api-timeout=1200s"
+      environment:
+        DEFAULT_LISTEN_PORT: '3005'
       ports:
-        - "${GOTENBER_PORT}:3000"
+        - 3005:3005
+      expose:
+        - "3005"
+      depends_on:
+        - workspace
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
       networks:
-        - frontend
         - backend
+      volumes:
+        - ${GOTENBERG_DOCUMENTS_PATH}:/documents
+
+    # gotenberg:
+    #   build: ./gotenberg
+    #   ports:
+    #     - "3005:3005"
+    #   networks:
+    #     - frontend
+    #     - backend
+        
 ### PHP-FPM ##############################################
     php-fpm:
       build:
@@ -482,6 +504,9 @@ services:
           - PUID=${PHP_WORKER_PUID}
           - PGID=${PHP_WORKER_PGID}
           - IMAGEMAGICK_VERSION=${PHP_WORKER_IMAGEMAGICK_VERSION}
+      ports:
+          - "6001:6001"
+          - "6002:6002"
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
@@ -566,11 +591,11 @@ services:
          frontend:
           aliases:
             - "appleid.apple.com"
-            - "https://appleid.apple.com"
+            - "http://backend.stacks.run:3005"
          backend:
           aliases:
             - "appleid.apple.com"
-            - "https://appleid.apple.com"
+            - "http://backend.stacks.run:3005"
 
 ### OpenResty Server #########################################
     openresty:
