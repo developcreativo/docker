@@ -47,7 +47,6 @@ ARG PUID=1000
 ENV PUID ${PUID}
 ARG PGID=1000
 ENV PGID ${PGID}
-
 # always run apt update when start and after add new source list, then clean up at end.
 RUN set -xe; \
     apt-get update -yqq && \
@@ -59,26 +58,35 @@ RUN set -xe; \
       apt-utils \
       git-flow \
       wget \
-      tesseract-ocr \
-      tesseract-ocr-spa \
-      tesseract-ocr-spa \
-      tesseract-ocr-rus \
-      tesseract-ocr-por \
-      tesseract-ocr-pol \
-      tesseract-ocr-ita \
-      tesseract-ocr-fra \
-      tesseract-ocr-eus \
-      tesseract-ocr-deu \
+      libjpeg-dev \ 
+      zlib1g-dev \ 
+      libfreetype6-dev \ 
+      liblcms2-dev \ 
+      libopenjp2-7-dev \ 
+      libtiff-dev \ 
+      tk-dev \ 
+      tcl-dev \
+      libffi-dev \
+      libmagic-dev  \
+      # tesseract-ocr \
+      # tesseract-ocr-spa \
+      # tesseract-ocr-spa \
+      # tesseract-ocr-rus \
+      # tesseract-ocr-por \
+      # tesseract-ocr-pol \
+      # tesseract-ocr-ita \
+      # tesseract-ocr-fra \
+      # tesseract-ocr-eus \
+      # tesseract-ocr-deu \
       poppler-utils \
       unoconv \
-      ffmpeg \
       meshlab \
       dia \
       gnuplot \
       curl \
       featherpad \
-      libreoffice-common \
-      libreoffice-java-common \
+      # libreoffice-common \
+      # libreoffice-java-common \
       imagemagick \
       pandoc \
       #
@@ -110,27 +118,36 @@ RUN mkdir /var/lib/browscap \
     && wget http://browscap.org/stream?q=BrowsCapINI -O /var/lib/browscap/browscap.ini
 
 
-RUN apt-get install -y --allow-downgrades --allow-remove-essential \
-        --allow-change-held-packages \
-        php7.4-cli \
-        php7.4-common \
-        php7.4-curl \
-        php7.4-intl \
-        php7.4-json \
-        php7.4-xml \
-        php7.4-mbstring \
-        php7.4-mysql \
-        php7.4-pgsql \
-        php7.4-pdo \
-        php7.4-redis \
-        php7.4-sqlite \
-        php7.4-sqlite3 \
-        php7.4-zip \
-        php7.4-imagick \
-        php7.4-bcmath \
-        php7.4-memcached \
-        php7.4-gd \
-        php7.4-dev
+  
+#Multi Version PHP
+ARG INSTALL_MULTI_PHP_VERSION=false
+
+RUN if [ ${INSTALL_MULTI_PHP_VERSION} = true ]; then \
+  if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
+    apt-get install -y --allow-downgrades --allow-remove-essential \
+          --allow-change-held-packages \
+          php7.4-cli \
+          php7.4-common \
+          php7.4-curl \
+          php7.4-intl \
+          php7.4-json \
+          php7.4-xml \
+          php7.4-mbstring \
+          php7.4-mysql \
+          php7.4-pgsql \
+          php7.4-pdo \
+          php7.4-redis \
+          php7.4-sqlite \
+          php7.4-sqlite3 \
+          php7.4-zip \
+          php7.4-imagick \
+          php7.4-bcmath \
+          php7.4-memcached \
+          php7.4-gd \
+          php7.4-dev \
+  ;fi \
+;fi
+
 #
 #--------------------------------------------------------------------------
 # Optional Software's Installation
@@ -183,6 +200,11 @@ RUN echo "" >> ~/.bashrc && \
 ###########################################################################
 
 USER root
+
+#requirements django
+COPY ./requirements /home/laradock/requirements
+RUN chmod -R 775 /home/laradock/requirements
+RUN chown  laradock:laradock /home/laradock
 
 # Add the composer.json
 COPY ./composer.json /home/laradock/.composer/composer.json
@@ -271,19 +293,19 @@ RUN chmod -R 644 /etc/cron.d
 # Deprecated install of Drush 8 and earlier versions.
 # Drush 9 and up require Drush to be listed as a composer dependency of your site.
 
-USER root
+# USER root
 
-ARG INSTALL_DRUSH=false
-ARG DRUSH_VERSION
-ENV DRUSH_VERSION ${DRUSH_VERSION}
+# ARG INSTALL_DRUSH=false
+# ARG DRUSH_VERSION
+# ENV DRUSH_VERSION ${DRUSH_VERSION}
 
-RUN if [ ${INSTALL_DRUSH} = true ]; then \
-    apt-get -qq -y install mysql-client && \
-    # Install Drush with the phar file.
-    curl -fsSL -o /usr/local/bin/drush https://github.com/drush-ops/drush/releases/download/${DRUSH_VERSION}/drush.phar | bash && \
-    chmod +x /usr/local/bin/drush && \
-    drush core-status \
-;fi
+# RUN if [ ${INSTALL_DRUSH} = true ]; then \
+#     apt-get -qq -y install mysql-client && \
+#     # Install Drush with the phar file.
+#     curl -fsSL -o /usr/local/bin/drush https://github.com/drush-ops/drush/releases/download/${DRUSH_VERSION}/drush.phar | bash && \
+#     chmod +x /usr/local/bin/drush && \
+#     drush core-status \
+# ;fi
 
 ###########################################################################
 # WP CLI:
@@ -441,48 +463,47 @@ RUN sed -i "s/xdebug.cli_color=0/xdebug.cli_color=1/" /etc/php/${LARADOCK_PHP_VE
 # pcov:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG INSTALL_PCOV=false
+# ARG INSTALL_PCOV=false
 
-RUN if [ ${INSTALL_PCOV} = true ]; then \
-  if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]  || { [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") != "0" ]; }; then \
-    pecl install pcov && \
-    echo "extension=pcov.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini && \
-    echo "pcov.enabled" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
-  ;fi \
-;fi
-
+# RUN if [ ${INSTALL_PCOV} = true ]; then \
+#   if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]  || { [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") != "0" ]; }; then \
+#     pecl install pcov && \
+#     echo "extension=pcov.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini && \
+#     echo "pcov.enabled" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
+#   ;fi \
+# ;fi
 
 ###########################################################################
 # Phpdbg:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG INSTALL_PHPDBG=false
+# ARG INSTALL_PHPDBG=false
 
-RUN if [ ${INSTALL_PHPDBG} = true ]; then \
-    # Load the xdebug extension only with phpunit commands
-    apt-get install -y --force-yes php${LARADOCK_PHP_VERSION}-phpdbg \
-;fi
+# RUN if [ ${INSTALL_PHPDBG} = true ]; then \
+#     # Load the xdebug extension only with phpunit commands
+#     apt-get install -y --force-yes php${LARADOCK_PHP_VERSION}-phpdbg \
+# ;fi
 
 ###########################################################################
 # Blackfire:
 ###########################################################################
 
-ARG INSTALL_BLACKFIRE=false
-ARG BLACKFIRE_CLIENT_ID
-ENV BLACKFIRE_CLIENT_ID ${BLACKFIRE_CLIENT_ID}
-ARG BLACKFIRE_CLIENT_TOKEN
-ENV BLACKFIRE_CLIENT_TOKEN ${BLACKFIRE_CLIENT_TOKEN}
+# ARG INSTALL_BLACKFIRE=false
+# ARG BLACKFIRE_CLIENT_ID
+# ENV BLACKFIRE_CLIENT_ID ${BLACKFIRE_CLIENT_ID}
+# ARG BLACKFIRE_CLIENT_TOKEN
+# ENV BLACKFIRE_CLIENT_TOKEN ${BLACKFIRE_CLIENT_TOKEN}
 
-RUN if [ ${INSTALL_XDEBUG} = false -a ${INSTALL_BLACKFIRE} = true ]; then \
-    curl -L https://packages.blackfire.io/gpg.key | apt-key add - && \
-    echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list && \
-    apt-get update -yqq && \
-    apt-get install blackfire-agent \
-;fi
+# RUN if [ ${INSTALL_XDEBUG} = false -a ${INSTALL_BLACKFIRE} = true ]; then \
+#     curl -L https://packages.blackfire.io/gpg.key | apt-key add - && \
+#     echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list && \
+#     apt-get update -yqq && \
+#     apt-get install blackfire-agent \
+# ;fi
 
 ###########################################################################
 # ssh:
@@ -535,65 +556,65 @@ fi
 # AMQP:
 ###########################################################################
 
-ARG INSTALL_AMQP=false
+# ARG INSTALL_AMQP=false
 
-RUN if [ ${INSTALL_AMQP} = true ]; then \
-    apt-get install -yqq librabbitmq-dev && \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
-      printf "\n" | pecl install amqp-1.11.0beta; \
-    else \
-      printf "\n" | pecl install amqp; \
-    fi && \
-    echo "extension=amqp.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/amqp.ini && \
-    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/amqp.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-amqp.ini \
-;fi
+# RUN if [ ${INSTALL_AMQP} = true ]; then \
+#     apt-get install -yqq librabbitmq-dev && \
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
+#       printf "\n" | pecl install amqp-1.11.0beta; \
+#     else \
+#       printf "\n" | pecl install amqp; \
+#     fi && \
+#     echo "extension=amqp.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/amqp.ini && \
+#     ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/amqp.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-amqp.ini \
+# ;fi
 
 ###########################################################################
 # CASSANDRA:
 ###########################################################################
 
-ARG INSTALL_CASSANDRA=false
+# ARG INSTALL_CASSANDRA=false
 
-RUN if [ ${INSTALL_CASSANDRA} = true ]; then \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
-      echo "PHP Driver for Cassandra is not supported for PHP 8.0."; \
-    else \
-      apt-get install libgmp-dev -yqq && \
-      curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1-dev_1.35.0-1_amd64.deb -o libuv1-dev.deb && \
-      curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1_1.35.0-1_amd64.deb -o libuv1.deb && \
-      curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver-dev_2.16.0-1_amd64.deb -o cassandra-cpp-driver-dev.deb && \
-      curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver_2.16.0-1_amd64.deb -o cassandra-cpp-driver.deb && \
-      dpkg -i libuv1.deb && \
-      dpkg -i libuv1-dev.deb && \
-      dpkg -i cassandra-cpp-driver.deb && \
-      dpkg -i cassandra-cpp-driver-dev.deb && \
-      rm libuv1.deb libuv1-dev.deb cassandra-cpp-driver-dev.deb cassandra-cpp-driver.deb && \
-      cd /usr/src && \
-      git clone https://github.com/datastax/php-driver.git && \
-      cd /usr/src/php-driver/ext && \
-      phpize && \
-      mkdir /usr/src/php-driver/build && \
-      cd /usr/src/php-driver/build && \
-      ../ext/configure > /dev/null && \
-      make clean >/dev/null && \
-      make >/dev/null 2>&1 && \
-      make install && \
-      echo "extension=cassandra.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-cassandra.ini; \
-    fi \
-;fi
+# RUN if [ ${INSTALL_CASSANDRA} = true ]; then \
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
+#       echo "PHP Driver for Cassandra is not supported for PHP 8.0."; \
+#     else \
+#       apt-get install libgmp-dev -yqq && \
+#       curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1-dev_1.35.0-1_amd64.deb -o libuv1-dev.deb && \
+#       curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1_1.35.0-1_amd64.deb -o libuv1.deb && \
+#       curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver-dev_2.16.0-1_amd64.deb -o cassandra-cpp-driver-dev.deb && \
+#       curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver_2.16.0-1_amd64.deb -o cassandra-cpp-driver.deb && \
+#       dpkg -i libuv1.deb && \
+#       dpkg -i libuv1-dev.deb && \
+#       dpkg -i cassandra-cpp-driver.deb && \
+#       dpkg -i cassandra-cpp-driver-dev.deb && \
+#       rm libuv1.deb libuv1-dev.deb cassandra-cpp-driver-dev.deb cassandra-cpp-driver.deb && \
+#       cd /usr/src && \
+#       git clone https://github.com/datastax/php-driver.git && \
+#       cd /usr/src/php-driver/ext && \
+#       phpize && \
+#       mkdir /usr/src/php-driver/build && \
+#       cd /usr/src/php-driver/build && \
+#       ../ext/configure > /dev/null && \
+#       make clean >/dev/null && \
+#       make >/dev/null 2>&1 && \
+#       make install && \
+#       echo "extension=cassandra.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini && \
+#       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-cassandra.ini; \
+#     fi \
+# ;fi
 
 ###########################################################################
 # Gearman:
 ###########################################################################
 
-ARG INSTALL_GEARMAN=false
+# ARG INSTALL_GEARMAN=false
 
-RUN if [ ${INSTALL_GEARMAN} = true ]; then \
-    add-apt-repository -y ppa:ondrej/pkg-gearman && \
-    apt-get update && \
-    apt-get -yqq install php-gearman \
-;fi
+# RUN if [ ${INSTALL_GEARMAN} = true ]; then \
+#     add-apt-repository -y ppa:ondrej/pkg-gearman && \
+#     apt-get update && \
+#     apt-get -yqq install php-gearman \
+# ;fi
 
 ###########################################################################
 # PHP REDIS EXTENSION
@@ -610,26 +631,26 @@ RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
 # Swoole EXTENSION
 ###########################################################################
 
-ARG INSTALL_SWOOLE=false
+# ARG INSTALL_SWOOLE=false
 
-RUN set -eux; \
-    if [ ${INSTALL_SWOOLE} = true ]; then \
-      # Install Php Swoole Extension
-      if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-        echo '' | pecl -q install swoole-2.0.10; \
-      elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
-        echo '' | pecl -q install swoole-4.3.5; \
-      elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "1" ]; then \
-        echo '' | pecl -q install swoole-4.5.11; \
-      elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
-        echo '' | pecl -q install swoole-4.8.12; \
-      else \
-        echo '' | pecl -q install swoole; \
-      fi; \
-      echo "extension=swoole.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini; \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-swoole.ini; \
-      php -m | grep -q 'swoole'; \
-    fi
+# RUN set -eux; \
+#     if [ ${INSTALL_SWOOLE} = true ]; then \
+#       # Install Php Swoole Extension
+#       if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#         echo '' | pecl -q install swoole-2.0.10; \
+#       elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
+#         echo '' | pecl -q install swoole-4.3.5; \
+#       elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "1" ]; then \
+#         echo '' | pecl -q install swoole-4.5.11; \
+#       elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
+#         echo '' | pecl -q install swoole-4.8.12; \
+#       else \
+#         echo '' | pecl -q install swoole; \
+#       fi; \
+#       echo "extension=swoole.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini; \
+#       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-swoole.ini; \
+#       php -m | grep -q 'swoole'; \
+#     fi
 
 
 
@@ -656,45 +677,45 @@ RUN set -eux; \
 # Taint EXTENSION
 ###########################################################################
 
-ARG INSTALL_TAINT=false
+# ARG INSTALL_TAINT=false
 
-RUN if [ "${INSTALL_TAINT}" = true ]; then \
-    # Install Php TAINT Extension
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
-      pecl install taint && \
-      echo "extension=taint.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/taint.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/taint.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-taint.ini && \
-      php -m | grep -q 'taint'; \
-    fi \
-;fi
+# RUN if [ "${INSTALL_TAINT}" = true ]; then \
+#     # Install Php TAINT Extension
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
+#       pecl install taint && \
+#       echo "extension=taint.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/taint.ini && \
+#       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/taint.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-taint.ini && \
+#       php -m | grep -q 'taint'; \
+#     fi \
+# ;fi
 
 ###########################################################################
 # Libpng16 EXTENSION
 ###########################################################################
 
-ARG INSTALL_LIBPNG=false
+# ARG INSTALL_LIBPNG=false
 
-RUN if [ ${INSTALL_LIBPNG} = true ]; then \
-    apt-get -yqq install libpng16-16 \
-;fi
+# RUN if [ ${INSTALL_LIBPNG} = true ]; then \
+#     apt-get -yqq install libpng16-16 \
+# ;fi
 
 ###########################################################################
 # Inotify EXTENSION:
 ###########################################################################
 
-ARG INSTALL_INOTIFY=false
+# ARG INSTALL_INOTIFY=false
 
-RUN if [ ${INSTALL_INOTIFY} = true ]; then \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      pecl -q install inotify-0.1.6 && \
-      echo "extension=inotify.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/inotify.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/inotify.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-inotify.ini; \
-    else \
-      pecl -q install inotify && \
-      echo "extension=inotify.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/inotify.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/inotify.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-inotify.ini \
-    ;fi \
-;fi
+# RUN if [ ${INSTALL_INOTIFY} = true ]; then \
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#       pecl -q install inotify-0.1.6 && \
+#       echo "extension=inotify.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/inotify.ini && \
+#       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/inotify.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-inotify.ini; \
+#     else \
+#       pecl -q install inotify && \
+#       echo "extension=inotify.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/inotify.ini && \
+#       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/inotify.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-inotify.ini \
+#     ;fi \
+# ;fi
 
 ###########################################################################
 # AST EXTENSION
@@ -718,58 +739,58 @@ RUN if [ ${INSTALL_AST} = true ]; then \
 # fswatch
 ###########################################################################
 
-ARG INSTALL_FSWATCH=false
+# ARG INSTALL_FSWATCH=false
 
-RUN if [ ${INSTALL_FSWATCH} = true ]; then \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 47FE03C1 \
-    && add-apt-repository -y ppa:hadret/fswatch \
-    || apt-get update -yqq \
-    && apt-get -y install fswatch \
-;fi
+# RUN if [ ${INSTALL_FSWATCH} = true ]; then \
+#     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 47FE03C1 \
+#     && add-apt-repository -y ppa:hadret/fswatch \
+#     || apt-get update -yqq \
+#     && apt-get -y install fswatch \
+# ;fi
 
 ###########################################################################
 
 # GraphViz extension
 ###########################################################################
 
-ARG INSTALL_GRAPHVIZ=false
+# ARG INSTALL_GRAPHVIZ=false
 
-RUN if [ ${INSTALL_GRAPHVIZ} = true ]; then \
-    apt-get install -yqq graphviz \
-;fi
+# RUN if [ ${INSTALL_GRAPHVIZ} = true ]; then \
+#     apt-get install -yqq graphviz \
+# ;fi
 
 # IonCube Loader
 ###########################################################################
 
-ARG INSTALL_IONCUBE=false
+# ARG INSTALL_IONCUBE=false
 
-RUN if [ ${INSTALL_IONCUBE} = true ]; then \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") != "8" ]; then \
-      # Install the php ioncube loader
-      curl -L -o /tmp/ioncube_loaders_lin_x86-64.tar.gz https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz \
-      && tar zxpf /tmp/ioncube_loaders_lin_x86-64.tar.gz -C /tmp \
-      && mv /tmp/ioncube/ioncube_loader_lin_${LARADOCK_PHP_VERSION}.so $(php -r "echo ini_get('extension_dir');")/ioncube_loader.so \
-      && echo "zend_extension=ioncube_loader.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/ioncube.ini \
-      && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/ioncube.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/0ioncube.ini \
-      && rm -rf /tmp/ioncube* \
-      && php -m | grep -oiE '^ionCube Loader$' \
-    ;fi \
-;fi
+# RUN if [ ${INSTALL_IONCUBE} = true ]; then \
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") != "8" ]; then \
+#       # Install the php ioncube loader
+#       curl -L -o /tmp/ioncube_loaders_lin_x86-64.tar.gz https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz \
+#       && tar zxpf /tmp/ioncube_loaders_lin_x86-64.tar.gz -C /tmp \
+#       && mv /tmp/ioncube/ioncube_loader_lin_${LARADOCK_PHP_VERSION}.so $(php -r "echo ini_get('extension_dir');")/ioncube_loader.so \
+#       && echo "zend_extension=ioncube_loader.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/ioncube.ini \
+#       && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/ioncube.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/0ioncube.ini \
+#       && rm -rf /tmp/ioncube* \
+#       && php -m | grep -oiE '^ionCube Loader$' \
+#     ;fi \
+# ;fi
 
 ###########################################################################
 # Drupal Console:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG INSTALL_DRUPAL_CONSOLE=false
+# ARG INSTALL_DRUPAL_CONSOLE=false
 
-RUN if [ ${INSTALL_DRUPAL_CONSOLE} = true ]; then \
-    apt-get -y install mysql-client && \
-    curl https://drupalconsole.com/installer -L -o drupal.phar && \
-    mv drupal.phar /usr/local/bin/drupal && \
-    chmod +x /usr/local/bin/drupal \
-;fi
+# RUN if [ ${INSTALL_DRUPAL_CONSOLE} = true ]; then \
+#     apt-get -y install mysql-client && \
+#     curl https://drupalconsole.com/installer -L -o drupal.phar && \
+#     mv drupal.phar /usr/local/bin/drupal && \
+#     chmod +x /usr/local/bin/drupal \
+# ;fi
 
 USER laradock
 
@@ -923,119 +944,119 @@ ENV PATH $PATH:/home/laradock/.yarn/bin
 # PHP Aerospike:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG INSTALL_AEROSPIKE=false
+# ARG INSTALL_AEROSPIKE=false
 
-RUN set -xe; \
-  if [ ${INSTALL_AEROSPIKE} = true ]; then \
-    # Fix dependencies for PHPUnit within aerospike extension
-    apt-get -y install sudo wget && \
-    # Install the php aerospike extension
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      curl -L -o /tmp/aerospike-client-php.tar.gz https://github.com/aerospike/aerospike-client-php5/archive/master.tar.gz; \
-    else \
-      curl -L -o /tmp/aerospike-client-php.tar.gz https://github.com/aerospike/aerospike-client-php/archive/master.tar.gz; \
-    fi \
-    && mkdir -p /tmp/aerospike-client-php \
-    && tar -C /tmp/aerospike-client-php -zxvf /tmp/aerospike-client-php.tar.gz --strip 1 \
-    && \
-      if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-        ( \
-          cd /tmp/aerospike-client-php/src/aerospike \
-          && phpize \
-          && ./build.sh \
-          && make install \
-        ) \
-      else \
-        if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
-          ( \
-              cd /tmp/aerospike-client-php/src \
-              && phpize \
-              && ./build.sh \
-              && make install \
-          ) \
-        else \
-          echo "AEROSPIKE does not support PHP 8.0" \
-        ;fi \
-      ;fi \
-    && rm /tmp/aerospike-client-php.tar.gz \
-    && echo 'extension=aerospike.so' >> /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/aerospike.ini \
-    && echo 'aerospike.udf.lua_system_path=/usr/local/aerospike/lua' >> /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/aerospike.ini \
-    && echo 'aerospike.udf.lua_user_path=/usr/local/aerospike/usr-lua' >> /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/aerospike.ini \
-  ;fi
+# RUN set -xe; \
+#   if [ ${INSTALL_AEROSPIKE} = true ]; then \
+#     # Fix dependencies for PHPUnit within aerospike extension
+#     apt-get -y install sudo wget && \
+#     # Install the php aerospike extension
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#       curl -L -o /tmp/aerospike-client-php.tar.gz https://github.com/aerospike/aerospike-client-php5/archive/master.tar.gz; \
+#     else \
+#       curl -L -o /tmp/aerospike-client-php.tar.gz https://github.com/aerospike/aerospike-client-php/archive/master.tar.gz; \
+#     fi \
+#     && mkdir -p /tmp/aerospike-client-php \
+#     && tar -C /tmp/aerospike-client-php -zxvf /tmp/aerospike-client-php.tar.gz --strip 1 \
+#     && \
+#       if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#         ( \
+#           cd /tmp/aerospike-client-php/src/aerospike \
+#           && phpize \
+#           && ./build.sh \
+#           && make install \
+#         ) \
+#       else \
+#         if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
+#           ( \
+#               cd /tmp/aerospike-client-php/src \
+#               && phpize \
+#               && ./build.sh \
+#               && make install \
+#           ) \
+#         else \
+#           echo "AEROSPIKE does not support PHP 8.0" \
+#         ;fi \
+#       ;fi \
+#     && rm /tmp/aerospike-client-php.tar.gz \
+#     && echo 'extension=aerospike.so' >> /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/aerospike.ini \
+#     && echo 'aerospike.udf.lua_system_path=/usr/local/aerospike/lua' >> /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/aerospike.ini \
+#     && echo 'aerospike.udf.lua_user_path=/usr/local/aerospike/usr-lua' >> /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/aerospike.ini \
+#   ;fi
 
 ###########################################################################
 # PHP OCI8:
 ###########################################################################
 
-USER root
-ARG INSTALL_OCI8=false
-ARG ORACLE_INSTANT_CLIENT_MIRROR=https://github.com/the-paulus/oracle-instantclient/raw/master/
-ARG ORACLE_INSTANT_CLIENT_ARCH=x86_64
-ARG ORACLE_INSTANT_CLIENT_MAJOR=18
-ARG ORACLE_INSTANT_CLIENT_MINOR=3
+# USER root
+# ARG INSTALL_OCI8=false
+# ARG ORACLE_INSTANT_CLIENT_MIRROR=https://github.com/the-paulus/oracle-instantclient/raw/master/
+# ARG ORACLE_INSTANT_CLIENT_ARCH=x86_64
+# ARG ORACLE_INSTANT_CLIENT_MAJOR=18
+# ARG ORACLE_INSTANT_CLIENT_MINOR=3
 
-ENV ORACLE_INSTANT_CLIENT_VERSION=${ORACLE_INSTANT_CLIENT_MAJOR}_${ORACLE_INSTANT_CLIENT_MINOR}
-ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}"
-ENV OCI_HOME="/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}"
-ENV OCI_LIB_DIR="/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}"
-ENV OCI_INCLUDE_DIR="/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/sdk/include"
-ENV OCI_VERSION=${ORACLE_INSTANT_CLIENT_MAJOR}
+# ENV ORACLE_INSTANT_CLIENT_VERSION=${ORACLE_INSTANT_CLIENT_MAJOR}_${ORACLE_INSTANT_CLIENT_MINOR}
+# ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}"
+# ENV OCI_HOME="/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}"
+# ENV OCI_LIB_DIR="/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}"
+# ENV OCI_INCLUDE_DIR="/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/sdk/include"
+# ENV OCI_VERSION=${ORACLE_INSTANT_CLIENT_MAJOR}
 
-RUN if [ ${INSTALL_OCI8} = true ]; then \
-  # Install wget
-  apt-get update && apt-get install --no-install-recommends -y wget \
-  # Install Oracle Instantclient
-  && mkdir /opt/oracle \
-      && cd /opt/oracle \
-      && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-basic-linux.${ORACLE_INSTANT_CLIENT_ARCH}-${ORACLE_INSTANT_CLIENT_VERSION}.zip \
-      && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-sdk-linux.${ORACLE_INSTANT_CLIENT_ARCH}-${ORACLE_INSTANT_CLIENT_VERSION}.zip \
-      && unzip /opt/oracle/instantclient-basic-linux.${ORACLE_INSTANT_CLIENT_ARCH}-${ORACLE_INSTANT_CLIENT_VERSION}.zip -d /opt/oracle \
-      && unzip /opt/oracle/instantclient-sdk-linux.${ORACLE_INSTANT_CLIENT_ARCH}-${ORACLE_INSTANT_CLIENT_VERSION}.zip -d /opt/oracle \
-      && if [ ${OCI_VERSION} -lt 18 ] ; then ln -s /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libclntsh.so.${ORACLE_INSTANT_CLIENT_MAJOR}.${ORACLE_INSTANT_CLIENT_MINOR} /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libclntsh.so ; fi\
-      && if [ ${OCI_VERSION} -lt 18 ] ; then ln -s /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libclntshcore.so.${ORACLE_INSTANT_CLIENT_MAJOR}.${ORACLE_INSTANT_CLIENT_MINOR} /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libclntshcore.so ; fi \
-      && if [ ${OCI_VERSION} -lt 18 ] ; then ln -s /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libocci.so.${ORACLE_INSTANT_CLIENT_MAJOR}.${ORACLE_INSTANT_CLIENT_MINOR} /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libocci.so ; fi \
-      && rm -rf /opt/oracle/*.zip \
-  # Install PHP extensions deps
-  && apt-get update \
-      && apt-get install --no-install-recommends -y \
-          libaio-dev && \
-  # Install PHP extensions
-  if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-  echo 'instantclient,/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/' | pecl install oci8-2.0.12; \
-  elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
-  echo 'instantclient,/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/' | pecl install oci8-2.2.0; \
-  elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "80000" ]; then \
-    echo "instantclient,/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/" | pecl install oci8-3.0.1; \
-  else \
-    echo "instantclient,/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/" | pecl install oci8; \
-  fi \
-  && echo "extension=oci8.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
-  && php -m | grep -q 'oci8' \
-;fi
+# RUN if [ ${INSTALL_OCI8} = true ]; then \
+#   # Install wget
+#   apt-get update && apt-get install --no-install-recommends -y wget \
+#   # Install Oracle Instantclient
+#   && mkdir /opt/oracle \
+#       && cd /opt/oracle \
+#       && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-basic-linux.${ORACLE_INSTANT_CLIENT_ARCH}-${ORACLE_INSTANT_CLIENT_VERSION}.zip \
+#       && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-sdk-linux.${ORACLE_INSTANT_CLIENT_ARCH}-${ORACLE_INSTANT_CLIENT_VERSION}.zip \
+#       && unzip /opt/oracle/instantclient-basic-linux.${ORACLE_INSTANT_CLIENT_ARCH}-${ORACLE_INSTANT_CLIENT_VERSION}.zip -d /opt/oracle \
+#       && unzip /opt/oracle/instantclient-sdk-linux.${ORACLE_INSTANT_CLIENT_ARCH}-${ORACLE_INSTANT_CLIENT_VERSION}.zip -d /opt/oracle \
+#       && if [ ${OCI_VERSION} -lt 18 ] ; then ln -s /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libclntsh.so.${ORACLE_INSTANT_CLIENT_MAJOR}.${ORACLE_INSTANT_CLIENT_MINOR} /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libclntsh.so ; fi\
+#       && if [ ${OCI_VERSION} -lt 18 ] ; then ln -s /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libclntshcore.so.${ORACLE_INSTANT_CLIENT_MAJOR}.${ORACLE_INSTANT_CLIENT_MINOR} /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libclntshcore.so ; fi \
+#       && if [ ${OCI_VERSION} -lt 18 ] ; then ln -s /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libocci.so.${ORACLE_INSTANT_CLIENT_MAJOR}.${ORACLE_INSTANT_CLIENT_MINOR} /opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/libocci.so ; fi \
+#       && rm -rf /opt/oracle/*.zip \
+#   # Install PHP extensions deps
+#   && apt-get update \
+#       && apt-get install --no-install-recommends -y \
+#           libaio-dev && \
+#   # Install PHP extensions
+#   if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#   echo 'instantclient,/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/' | pecl install oci8-2.0.12; \
+#   elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
+#   echo 'instantclient,/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/' | pecl install oci8-2.2.0; \
+#   elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "80000" ]; then \
+#     echo "instantclient,/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/" | pecl install oci8-3.0.1; \
+#   else \
+#     echo "instantclient,/opt/oracle/instantclient_${ORACLE_INSTANT_CLIENT_VERSION}/" | pecl install oci8; \
+#   fi \
+#   && echo "extension=oci8.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
+#   && php -m | grep -q 'oci8' \
+# ;fi
 
 ###########################################################################
 # PHP V8JS:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG INSTALL_V8JS=false
+# ARG INSTALL_V8JS=false
 
-RUN set -xe; \
-  if [ ${INSTALL_V8JS} = true ]; then \
-    add-apt-repository -y ppa:pinepain/libv8-archived \
-    && apt-get update -yqq \
-    && apt-get install -y libv8-5.4 && \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      pecl install v8js-0.6.4; \
-    else \
-      pecl install v8js; \
-    fi \
-    && echo "extension=v8js.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
-    && php -m | grep -q 'v8js' \
-  ;fi
+# RUN set -xe; \
+#   if [ ${INSTALL_V8JS} = true ]; then \
+#     add-apt-repository -y ppa:pinepain/libv8-archived \
+#     && apt-get update -yqq \
+#     && apt-get install -y libv8-5.4 && \
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#       pecl install v8js-0.6.4; \
+#     else \
+#       pecl install v8js; \
+#     fi \
+#     && echo "extension=v8js.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
+#     && php -m | grep -q 'v8js' \
+#   ;fi
 
 ###########################################################################
 # Laravel Envoy:
@@ -1249,6 +1270,10 @@ RUN if [ ${INSTALL_PYTHON3} = true ]; then \
   && rm get-pip.py  \
   && python3.9 -m pip install --upgrade --force-reinstall pip  \
   && python3.9 -m pip install --upgrade virtualenv \
+  && python3.9 -m pip install pre-commit \
+  && python3.9 -m pip install -U autopep8 \
+  && cd /home/laradock/requirements \
+  && pip install -r dev.txt \
 ;fi
 
 ###########################################################################
@@ -1320,17 +1345,17 @@ RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xm
 # Terraform:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG INSTALL_TERRAFORM=false
+# ARG INSTALL_TERRAFORM=false
 
-RUN if [ ${INSTALL_TERRAFORM} = true ]; then \
-    apt-get -yqq install sudo wget unzip \
-    && wget https://releases.hashicorp.com/terraform/0.10.6/terraform_0.10.6_linux_amd64.zip \
-    && unzip terraform_0.10.6_linux_amd64.zip \
-    && mv terraform /usr/local/bin \
-    && rm terraform_0.10.6_linux_amd64.zip \
-;fi
+# RUN if [ ${INSTALL_TERRAFORM} = true ]; then \
+#     apt-get -yqq install sudo wget unzip \
+#     && wget https://releases.hashicorp.com/terraform/0.10.6/terraform_0.10.6_linux_amd64.zip \
+#     && unzip terraform_0.10.6_linux_amd64.zip \
+#     && mv terraform /usr/local/bin \
+#     && rm terraform_0.10.6_linux_amd64.zip \
+# ;fi
 
 ###########################################################################
 # Memcached Dependecies:
@@ -1364,45 +1389,45 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
 # Dusk Dependencies:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG CHROME_DRIVER_VERSION=stable
-ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
-ARG INSTALL_DUSK_DEPS=false
+# ARG CHROME_DRIVER_VERSION=stable
+# ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
+# ARG INSTALL_DUSK_DEPS=false
 
-RUN if [ ${INSTALL_DUSK_DEPS} = true ]; then \
-  apt-get -y install zip wget unzip xdg-utils \
-    libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4 xvfb \
-    gtk2-engines-pixbuf xfonts-cyrillic xfonts-100dpi xfonts-75dpi \
-    xfonts-base xfonts-scalable x11-apps \
-  && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-  && dpkg -i --force-depends google-chrome-stable_current_amd64.deb \
-  && apt-get -y -f install \
-  && dpkg -i --force-depends google-chrome-stable_current_amd64.deb \
-  && rm google-chrome-stable_current_amd64.deb \
-  && wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip \
-  && unzip chromedriver_linux64.zip \
-  && mv chromedriver /usr/local/bin/ \
-  && rm chromedriver_linux64.zip \
-;fi
+# RUN if [ ${INSTALL_DUSK_DEPS} = true ]; then \
+#   apt-get -y install zip wget unzip xdg-utils \
+#     libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4 xvfb \
+#     gtk2-engines-pixbuf xfonts-cyrillic xfonts-100dpi xfonts-75dpi \
+#     xfonts-base xfonts-scalable x11-apps \
+#   && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+#   && dpkg -i --force-depends google-chrome-stable_current_amd64.deb \
+#   && apt-get -y -f install \
+#   && dpkg -i --force-depends google-chrome-stable_current_amd64.deb \
+#   && rm google-chrome-stable_current_amd64.deb \
+#   && wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip \
+#   && unzip chromedriver_linux64.zip \
+#   && mv chromedriver /usr/local/bin/ \
+#   && rm chromedriver_linux64.zip \
+# ;fi
 
 ###########################################################################
 # Phalcon:
 ###########################################################################
 
-ARG INSTALL_PHALCON=false
-ARG LARADOCK_PHALCON_VERSION
-ENV LARADOCK_PHALCON_VERSION ${LARADOCK_PHALCON_VERSION}
+# ARG INSTALL_PHALCON=false
+# ARG LARADOCK_PHALCON_VERSION
+# ENV LARADOCK_PHALCON_VERSION ${LARADOCK_PHALCON_VERSION}
 
-RUN if [ $INSTALL_PHALCON = true ]; then \
-      apt-get update -yqq \
-      && pecl channel-update pecl.php.net \
-      && apt-get install -yqq libpcre3-dev; \
-      pecl install phalcon-${LARADOCK_PHALCON_VERSION}; \
-      echo "extension=phalcon.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/phalcon.ini; \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/phalcon.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/50-phalcon.ini; \
-      php -m | grep -q 'phalcon' \
-  ;fi
+# RUN if [ $INSTALL_PHALCON = true ]; then \
+#       apt-get update -yqq \
+#       && pecl channel-update pecl.php.net \
+#       && apt-get install -yqq libpcre3-dev; \
+#       pecl install phalcon-${LARADOCK_PHALCON_VERSION}; \
+#       echo "extension=phalcon.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/phalcon.ini; \
+#       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/phalcon.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/50-phalcon.ini; \
+#       php -m | grep -q 'phalcon' \
+#   ;fi
 
 ###########################################################################
 USER root
@@ -1589,25 +1614,25 @@ RUN if [ ${INSTALL_LNAV} = true ]; then \
 # Protoc:
 ###########################################################################
 
-ARG INSTALL_PROTOC=false
-ARG PROTOC_VERSION
+# ARG INSTALL_PROTOC=false
+# ARG PROTOC_VERSION
 
-RUN if [ ${INSTALL_PROTOC} = true ]; then \
-  apt-get -yqq install sudo wget unzip && \
-  if [ ${PROTOC_VERSION} = "latest" ]; then \
-    REAL_PROTOC_VERSION=$(curl -s https://api.github.com/repos/protocolbuffers/protobuf/releases/latest | \
-      sed -nr 's/.*"tag_name":\s?"v(.+?)".*/\1/p'); \
-  else \
-    REAL_PROTOC_VERSION=${PROTOC_VERSION}; \
-  fi && \
-  PROTOC_ZIP=protoc-${REAL_PROTOC_VERSION}-linux-x86_64.zip; \
-  wget https://github.com/protocolbuffers/protobuf/releases/download/v${REAL_PROTOC_VERSION}/${PROTOC_ZIP} && \
-  unzip -q -o ${PROTOC_ZIP} -d /usr/local bin/protoc && \
-  unzip -q -o ${PROTOC_ZIP} -d /usr/local 'include/*' && \
-  rm -f ${PROTOC_ZIP} && \
-  chmod +x /usr/local/bin/protoc && \
-  chmod -R +r /usr/local/include/google \
-;fi
+# RUN if [ ${INSTALL_PROTOC} = true ]; then \
+#   apt-get -yqq install sudo wget unzip && \
+#   if [ ${PROTOC_VERSION} = "latest" ]; then \
+#     REAL_PROTOC_VERSION=$(curl -s https://api.github.com/repos/protocolbuffers/protobuf/releases/latest | \
+#       sed -nr 's/.*"tag_name":\s?"v(.+?)".*/\1/p'); \
+#   else \
+#     REAL_PROTOC_VERSION=${PROTOC_VERSION}; \
+#   fi && \
+#   PROTOC_ZIP=protoc-${REAL_PROTOC_VERSION}-linux-x86_64.zip; \
+#   wget https://github.com/protocolbuffers/protobuf/releases/download/v${REAL_PROTOC_VERSION}/${PROTOC_ZIP} && \
+#   unzip -q -o ${PROTOC_ZIP} -d /usr/local bin/protoc && \
+#   unzip -q -o ${PROTOC_ZIP} -d /usr/local 'include/*' && \
+#   rm -f ${PROTOC_ZIP} && \
+#   chmod +x /usr/local/bin/protoc && \
+#   chmod -R +r /usr/local/include/google \
+# ;fi
 
 ###########################################################################
 # Check PHP version:
@@ -1717,69 +1742,69 @@ RUN if [ ${INSTALL_PHPDECIMAL} = true ]; then \
 ###########################################################################
 # zookeeper
 ###########################################################################
-ARG INSTALL_ZOOKEEPER=false
+# ARG INSTALL_ZOOKEEPER=false
 
-RUN set -eux; \
-    if [ ${INSTALL_ZOOKEEPER} = true ]; then \
-    apt install -yqq libzookeeper-mt-dev; \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
-      curl -L -o /tmp/php-zookeeper.tar.gz https://github.com/php-zookeeper/php-zookeeper/archive/master.tar.gz; \
-      mkdir -p /tmp/php-zookeeper; \
-      tar -C /tmp/php-zookeeper -zxvf /tmp/php-zookeeper.tar.gz --strip 1; \
-      cd /tmp/php-zookeeper; \
-      phpize && ./configure && make && make install;\
-    else \
-      if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-        pecl install zookeeper-0.5.0; \
-      else \
-        pecl install zookeeper-0.7.2; \
-      fi; \
-    fi; \
-    echo "extension=zookeeper.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zookeeper.ini; \
-    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zookeeper.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-zookeeper.ini; \
-    php -m | grep -q 'zookeeper'; \
-    fi
+# RUN set -eux; \
+#     if [ ${INSTALL_ZOOKEEPER} = true ]; then \
+#     apt install -yqq libzookeeper-mt-dev; \
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
+#       curl -L -o /tmp/php-zookeeper.tar.gz https://github.com/php-zookeeper/php-zookeeper/archive/master.tar.gz; \
+#       mkdir -p /tmp/php-zookeeper; \
+#       tar -C /tmp/php-zookeeper -zxvf /tmp/php-zookeeper.tar.gz --strip 1; \
+#       cd /tmp/php-zookeeper; \
+#       phpize && ./configure && make && make install;\
+#     else \
+#       if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#         pecl install zookeeper-0.5.0; \
+#       else \
+#         pecl install zookeeper-0.7.2; \
+#       fi; \
+#     fi; \
+#     echo "extension=zookeeper.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zookeeper.ini; \
+#     ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zookeeper.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-zookeeper.ini; \
+#     php -m | grep -q 'zookeeper'; \
+#     fi
 
 ###########################################################################
 # PHP SSDB:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG INSTALL_SSDB=false
+# ARG INSTALL_SSDB=false
 
-RUN set -xe; \
-    if [ ${INSTALL_SSDB} = true ] && [ $(php -r "echo PHP_MAJOR_VERSION;") != "8" ]; then \
-    apt-get -y install sudo wget && \
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
-      curl -L -o /tmp/ssdb-client-php.tar.gz https://github.com/jonnywang/phpssdb/archive/php7.tar.gz; \
-    else \
-      curl -L -o /tmp/ssdb-client-php.tar.gz https://github.com/jonnywang/phpssdb/archive/master.tar.gz; \
-    fi \
-    && mkdir -p /tmp/ssdb-client-php \
-    && tar -C /tmp/ssdb-client-php -zxvf /tmp/ssdb-client-php.tar.gz --strip 1 \
-    && cd /tmp/ssdb-client-php \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install \
-    && rm /tmp/ssdb-client-php.tar.gz \
-    && docker-php-ext-enable ssdb \
-;fi
+# RUN set -xe; \
+#     if [ ${INSTALL_SSDB} = true ] && [ $(php -r "echo PHP_MAJOR_VERSION;") != "8" ]; then \
+#     apt-get -y install sudo wget && \
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
+#       curl -L -o /tmp/ssdb-client-php.tar.gz https://github.com/jonnywang/phpssdb/archive/php7.tar.gz; \
+#     else \
+#       curl -L -o /tmp/ssdb-client-php.tar.gz https://github.com/jonnywang/phpssdb/archive/master.tar.gz; \
+#     fi \
+#     && mkdir -p /tmp/ssdb-client-php \
+#     && tar -C /tmp/ssdb-client-php -zxvf /tmp/ssdb-client-php.tar.gz --strip 1 \
+#     && cd /tmp/ssdb-client-php \
+#     && phpize \
+#     && ./configure \
+#     && make \
+#     && make install \
+#     && rm /tmp/ssdb-client-php.tar.gz \
+#     && docker-php-ext-enable ssdb \
+# ;fi
 
 #####################################
 # trader:
 #####################################
 
-USER root
+# USER root
 
-ARG INSTALL_TRADER=false
+# ARG INSTALL_TRADER=false
 
-RUN if [ ${INSTALL_TRADER} = true ]; then \
-    pecl install trader \
-    && echo "extension=trader.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/trader.ini \
-    && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/trader.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-trader.ini \
-;fi
+# RUN if [ ${INSTALL_TRADER} = true ]; then \
+#     pecl install trader \
+#     && echo "extension=trader.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/trader.ini \
+#     && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/trader.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-trader.ini \
+# ;fi
 
 #
 #--------------------------------------------------------------------------
@@ -1787,23 +1812,23 @@ RUN if [ ${INSTALL_TRADER} = true ]; then \
 #--------------------------------------------------------------------------
 #
 
-USER root
+# USER root
 
-ARG INSTALL_ZMQ=false
+# ARG INSTALL_ZMQ=false
 
-RUN if [ ${INSTALL_ZMQ} = true ]; then \
-    apt-get install --yes git libzmq3-dev \
-    && git clone https://github.com/zeromq/php-zmq.git \
-    && cd php-zmq \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -fr php-zmq \
-    && echo "extension=zmq.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zmq.ini \
-    && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zmq.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-zmq.ini \
-;fi
+# RUN if [ ${INSTALL_ZMQ} = true ]; then \
+#     apt-get install --yes git libzmq3-dev \
+#     && git clone https://github.com/zeromq/php-zmq.git \
+#     && cd php-zmq \
+#     && phpize \
+#     && ./configure \
+#     && make \
+#     && make install \
+#     && cd .. \
+#     && rm -fr php-zmq \
+#     && echo "extension=zmq.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zmq.ini \
+#     && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zmq.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-zmq.ini \
+# ;fi
 
 ############################################################################
 ## Event:

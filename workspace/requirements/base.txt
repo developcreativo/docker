@@ -1,0 +1,71 @@
+celery[redis]==5.2.7 # https://docs.celeryq.dev/en/latest/index.html
+django==4.1 # https://docs.djangoproject.com/en/dev/releases/4.1/
+django-allauth==0.50.0  # https://github.com/pennersr/django-allauth
+django-braces==1.15.0 # https://django-braces.readthedocs.io/en/latest/
+django-compressor==4.1 # https://django-compressor.readthedocs.io/en/latest/
+django-cors-headers==3.13.0 # https://github.com/adamchainz/django-cors-headers
+django-countries[pyuca]==7.3.2 # https://github.com/SmileyChris/django-countries/
+django-crispy-forms==1.14.0  # https://github.com/django-crispy-forms/django-crispy-forms
+django-extensions==3.2.0 # https://github.com/django-extensions/django-extensions
+django-filter==22.1 # https://github.com/carltongibson/django-filter
+django-mptt==0.13.4 # https://django-mptt.readthedocs.io/en/latest/index.html
+django-phonenumber-field[phonenumberslite]==6.3.0 # https://github.com/stefanfoulis/django-phonenumber-field
+django-storages[boto3]==1.13.1 # https://django-storages.readthedocs.io/en/latest/index.html
+djangorestframework==3.13.1 # https://www.django-rest-framework.org/
+djangorestframework-datatables==0.7.0 # https://github.com/izimobil/django-rest-framework-datatables
+djangorestframework-simplejwt==5.2.0 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
+dj-rest-auth==2.2.5 # https://django-rest-auth.readthedocs.io/en/latest/index.html
+drf-spectacular==0.23.1 # https://drf-spectacular.readthedocs.io/en/latest/readme.html
+drf-extensions==0.7.1 # https://github.com/chibisov/drf-extensions
+firebase-admin==5.2.0 # https://firebase.google.com/docs/admin/setup
+pillow==9.2.0 # https://python-pillow.org/
+psycopg2-binary==2.9.3 # https://www.psycopg.org/
+crispy-bootstrap5==0.6  # https://github.com/django-crispy-forms/crispy-bootstrap5
+python-dotenv==0.20.0 # https://github.com/theskumar/python-dotenv
+ipinfo_django==2.0.0 # https://github.com/ipinfo/django
+django-versatileimagefield==2.2 # https://django-versatileimagefield.readthedocs.io/en/latest/installation.html
+django-anymail[amazon_ses]==8.5 # https://anymail.dev/en/stable/
+# django-ipware==4.0.2 # https://github.com/un33k/django-ipware
+django-ipware==3.0.2 # https://github.com/un33k/django-ipware
+pyotp==2.7.0 # https://github.com/pyauth/pyotp
+requests-cache[json]==0.9.7 # https://requests-cache.readthedocs.io/en/stable/index.html
+django-redis==5.2.0 # https://github.com/jazzband/django-redis
+django-celery-beat==2.4.0 # https://github.com/celery/django-celery-beat
+django-celery-results==2.4.0 # https://github.com/celery/django-celery-results
+requests_cache==0.9.7 # https://github.com/requests-cache/requests-cache
+
+django-rosetta==0.9.8 # https://github.com/mbi/django-rosetta
+django-parler==2.3 # https://django-parler.readthedocs.io/en/stable/index.html
+django-parler-rest==2.2 # https://github.com/django-parler/django-parler-rest
+
+django-deep-link==0.2.6 # https://pypi.org/project/django-deep-link/
+drf-writable-nested==0.7.0 # https://github.com/beda-software/drf-writable-nested
+django-taggit==3.1.0 # https://github.com/jazzband/django-taggit
+#no relation db
+pymongo==3.12.1 #https://github.com/mongodb/mongo-python-driver
+djongo==1.3.6 #https://pypi.org/project/djongo/
+
+# Chat
+daphne==4.0.0 # https://github.com/django/daphne
+channels==4.0.0 # https://channels.readthedocs.io/en/stable/
+channels-redis==4.0.0 # https://github.com/django/channels_redis/
+
+#agora
+agora-token-builder==1.0.0 # https://github.com/AgoraIO-Community/python-token-builder
+
+#Video
+moviepy==1.0.3  # https://github.com/Zulko/moviepy
+#Lib
+numpy==1.24.1 # https://github.com/numpy/numpy
+
+#S3
+boto3==1.26.56
+
+# Install Linux lib dependences
+# sudo su -
+# apt update && apt install -y libsm6 libxext6 ffmpeg libfontconfig1 libxrender1 libgl1-mesa-glx
+
+django-userforeignkey==0.5.0 # https://github.com/beachmachine/django-userforeignkey
+
+#Emoji
+emoji==2.2.0

@@ -698,7 +698,7 @@ services:
         - "${VARNISH_BACKEND_PORT}:81"
       depends_on:
         - php-fpm
-        - php-fpm-7.4
+        #- php-fpm-7.4
       networks:
          frontend:
           aliases:
@@ -1864,7 +1864,7 @@ services:
       volumes:
         - ${DATA_PATH_HOST}/mongo-webui:/data/db
       ports:
-        - "${MONGO_WEBUI_PORT}:8089"
+        - "${MONGO_WEBUI_PORT}:3000"
       networks:
         - backend
       depends_on:
