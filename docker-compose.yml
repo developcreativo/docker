@@ -1864,7 +1864,7 @@ services:
       volumes:
         - ${DATA_PATH_HOST}/mongo-webui:/data/db
       ports:
-        - "${MONGO_WEBUI_PORT}:3000"
+        - "${MONGO_WEBUI_PORT}:3005"
       networks:
         - backend
       depends_on:

@@ -1264,14 +1264,18 @@ RUN if [ ${INSTALL_PYTHON} = true ]; then \
 ARG INSTALL_PYTHON3=false
 
 RUN if [ ${INSTALL_PYTHON3} = true ]; then \
-  apt-get -y install python3.9 python3.9-dev python3.9-venv build-essential  \
-  && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py  \
-  && python3.9 get-pip.py  \
-  && rm get-pip.py  \
-  && python3.9 -m pip install --upgrade --force-reinstall pip  \
-  && python3.9 -m pip install --upgrade virtualenv \
-  && python3.9 -m pip install pre-commit \
-  && python3.9 -m pip install -U autopep8 \
+  apt-get -y update \
+  && apt-get -y install software-properties-common \
+  && add-apt-repository ppa:deadsnakes/ppa \
+  && apt-get -y update \
+  && apt-get -y install python3.10 python3.10-venv build-essential \
+  && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+  && python3.10 get-pip.py \
+  && rm get-pip.py \
+  && python3.10 -m pip install --upgrade --force-reinstall pip \
+  && python3.10 -m pip install daphne \
+  && python3.10 -m pip install pre-commit \
+  && python3.10 -m pip install isort \
   && cd /home/laradock/requirements \
   && pip install -r dev.txt \
 ;fi
